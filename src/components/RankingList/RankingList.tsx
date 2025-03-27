@@ -48,10 +48,10 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
     setConfetti(generateConfetti());
   }, []);
 
-  const triggerCelebration = () => {
-    setCelebrating(true);
-    setTimeout(() => setCelebrating(false), 4000);
-  };
+ // const triggerCelebration = () => {
+   // setCelebrating(true);
+   // setTimeout(() => setCelebrating(false), 4000);
+ // };
 
   const toggleDriverView = (index: number) => {
     setExpandedView(expandedView === index ? null : index);
