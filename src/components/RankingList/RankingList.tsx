@@ -40,7 +40,7 @@ const generateConfetti = () => {
 
 const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingListProps) => {
   const [confetti, setConfetti] = useState<any[]>([]);
-  const [celebrating, setCelebrating] = useState(false);
+  //const [celebrating, setCelebrating] = useState(false);
   const [expandedView, setExpandedView] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'normal' | 'goal'>('normal');
 
