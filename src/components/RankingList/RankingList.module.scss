@@ -64,8 +64,8 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
 
 // Container principal
 .gameContainer {
-  max-width: 900px;
-  margin: 2rem auto;
+  max-width: 100%;
+  margin: 0;
   background: $background;
   border-radius: 24px;
   overflow: hidden;
