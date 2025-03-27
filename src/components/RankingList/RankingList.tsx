@@ -16,12 +16,11 @@ interface RankingListProps {
   monthlyGoal?: number;
 }
 
-const GOAL = 600; // Meta mensal de 600 encomendas
+const GOAL = 600;
 
 const generateConfetti = () => {
   const confetti = [];
   const emojis = ['🎉', '🏆', '🚀', '💎', '⭐', '🔥', '✨'];
-  
   for (let i = 0; i < 75; i++) {
     confetti.push({
       id: i,
@@ -48,11 +47,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
     setConfetti(generateConfetti());
   }, []);
 
- // const triggerCelebration = () => {
-   // setCelebrating(true);
-   // setTimeout(() => setCelebrating(false), 4000);
- // };
-
   const toggleDriverView = (index: number) => {
     setExpandedView(expandedView === index ? null : index);
   };
@@ -63,16 +57,14 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
 
   return (
     <div className={styles.gameContainer}>
-      {/* Efeito de partículas de fundo */}
       <div className={styles.particles}>
         {Array.from({ length: 20 }).map((_, i) => (
           <div key={i} className={styles.particle}></div>
         ))}
       </div>
 
-      {/* Header com modo de visualização */}
       <div className={styles.header}>
-        <motion.h1 
+        <motion.h1
           className={styles.title}
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
@@ -80,15 +72,15 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
         >
           🚛 FASTRACK ELITE 🏁
         </motion.h1>
-        
+
         <div className={styles.viewToggle}>
-          <button 
+          <button
             className={`${styles.toggleButton} ${viewMode === 'normal' ? styles.active : ''}`}
             onClick={() => setViewMode('normal')}
           >
             Ranking
           </button>
-          <button 
+          <button
             className={`${styles.toggleButton} ${viewMode === 'goal' ? styles.active : ''}`}
             onClick={() => setViewMode('goal')}
           >
@@ -100,9 +92,9 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
           <div className={styles.goalMeter}>
             <div className={styles.goalLabel}>Meta do Mês: {monthlyGoal} entregas</div>
             <div className={styles.goalProgress}>
-              <div 
-                className={styles.goalFill} 
-                style={{ width: `${(ranking.reduce((sum, driver) => sum + driver.deliveries, 0) / monthlyGoal * 100)}%` }}
+              <div
+                className={styles.goalFill}
+                style={{ width: `${(ranking.reduce((sum, driver) => sum + driver.deliveries, 0) / monthlyGoal) * 100}%` }}
               />
             </div>
           </div>
@@ -110,7 +102,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
         </div>
       </div>
 
-      {/* Pódio 3D com efeitos especiais */}
       <div className={styles.podiumContainer}>
         {ranking.slice(0, 3).map((driver, index) => (
           <motion.div
@@ -131,7 +122,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
         ))}
       </div>
 
-      {/* Leaderboard com modo de visualização */}
       <div className={styles.leaderboard}>
         {celebrating && (
           <div className={styles.confettiContainer}>
@@ -142,7 +132,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                 style={piece.style}
                 initial={{ y: -100, opacity: 1 }}
                 animate={{ y: '100vh', opacity: 0 }}
-                transition={{ 
+                transition={{
                   duration: parseFloat(piece.style.animationDuration),
                   delay: parseFloat(piece.style.animationDelay),
                   ease: 'linear'
@@ -168,12 +158,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0 }}
-                  transition={{ 
-                    delay: index * 0.05,
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 10
-                  }}
+                  transition={{ delay: index * 0.05, type: 'spring', stiffness: 100, damping: 10 }}
                   whileHover={{ scale: 1.02 }}
                   onClick={() => toggleDriverView(index)}
                   layout
@@ -195,15 +180,10 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                   <div className={styles.driverInfo}>
                     <div className={styles.nameProgress}>
                       <span className={styles.name}>{driver.name}</span>
-                      <span className={styles.deliveries}>
-                        {driver.deliveries.toLocaleString()} pts
-                      </span>
+                      <span className={styles.deliveries}>{driver.deliveries.toLocaleString()} pts</span>
                     </div>
                     <div className={styles.progressBar}>
-                      <div 
-                        className={styles.progressFill} 
-                        style={{ width: `${progress}%` }}
-                      />
+                      <div className={styles.progressFill} style={{ width: `${progress}%` }} />
                       <span className={styles.progressText}>{progress.toFixed(0)}%</span>
                     </div>
                   </div>
@@ -215,7 +195,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                   )}
 
                   {isExpanded && (
-                    <motion.div 
+                    <motion.div
                       className={styles.expandedInfo}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
@@ -228,7 +208,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                         </div>
                         <div className={styles.statItem}>
                           <span className={styles.statLabel}>Rating</span>
-                          <span className={styles.statValue}>⭐{5 - index * 0.5}</span>
+                          <span className={styles.statValue}>⭐{(5 - index * 0.5).toFixed(1)}</span>
                         </div>
                         <div className={styles.statItem}>
                           <span className={styles.statLabel}>Eficiência</span>
@@ -239,7 +219,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                           <span className={styles.statValue}>{50 - (driver.deliveries % 50)} pts</span>
                         </div>
                       </div>
-                      <button 
+                      <button
                         className={styles.challengeButton}
                         onClick={(e) => {
                           e.stopPropagation();
@@ -262,7 +242,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
             >
               {ranking.slice(0, 10).map((driver, index) => {
                 const progress = calculateProgress(driver.deliveries);
-                
                 return (
                   <div key={`goal-${index}`} className={styles.goalCard}>
                     <div className={styles.goalRank}>{index + 1}º</div>
@@ -270,10 +249,7 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
                     <div className={styles.goalInfo}>
                       <div className={styles.goalName}>{driver.name}</div>
                       <div className={styles.goalProgressContainer}>
-                        <div 
-                          className={styles.goalProgressBar} 
-                          style={{ width: `${progress}%` }}
-                        >
+                        <div className={styles.goalProgressBar} style={{ width: `${progress}%` }}>
                           <span className={styles.goalProgressText}>
                             {driver.deliveries}/{monthlyGoal} ({progress.toFixed(0)}%)
                           </span>
@@ -291,7 +267,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
         </AnimatePresence>
       </div>
 
-      {/* Footer com ações */}
       <div className={styles.footer}>
         <div className={styles.teamStats}>
           <div className={styles.teamStat}>
@@ -303,9 +278,9 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
             <span>{ranking.reduce((sum, driver) => sum + driver.deliveries, 0).toLocaleString()}</span>
           </div>
         </div>
-        
+
         <div className={styles.actionButtons}>
-          <button 
+          <button
             className={styles.powerupButton}
             onClick={() => alert('Power-up ativado! Bônus de 10% por 2 horas!')}
           >
@@ -317,7 +292,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
         </div>
       </div>
 
-      {/* Efeito de luz para o top 1 */}
       {ranking.length > 0 && (
         <div className={styles.championGlow}></div>
       )}
