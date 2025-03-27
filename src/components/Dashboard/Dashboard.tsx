@@ -7,7 +7,7 @@ interface Account {
   name: string;
   avatar: string;
   level: number;
-  deliveries: number;
+  deliveries?: number; // Tornado opcional, pois não está no JSON
   achievements: string[];
   token: string;
   password: string;
@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    // Se o JSON tem a propriedade "accounts", utilize-a:
+    // Se o JSON tem a propriedade "accounts", utiliza-a:
     setAccounts(accountsData.accounts);
   }, []);
 
@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
         <img src={selectedAccount?.avatar} alt={selectedAccount?.name} className={styles.avatar} />
         <h3 className={styles.name}>{selectedAccount?.name}</h3>
         <p className={styles.level}>Nível: {selectedAccount?.level}</p>
-        <p className={styles.deliveries}>Entregas: {selectedAccount?.deliveries}</p>
+        <p className={styles.deliveries}>Entregas: {selectedAccount?.deliveries || 0}</p>
         <div className={styles.achievements}>
           {selectedAccount?.achievements.map((ach, idx) => (
             <span key={idx} className={styles.achievement}>{ach}</span>
