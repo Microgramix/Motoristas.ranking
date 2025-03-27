@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './RankingList.module.scss';
 
 interface RankingItem {
@@ -18,34 +18,9 @@ interface RankingListProps {
 
 const GOAL = 600;
 
-const generateConfetti = () => {
-  const confetti = [];
-  const emojis = ['🎉', '🏆', '🚀', '💎', '⭐', '🔥', '✨'];
-  for (let i = 0; i < 75; i++) {
-    confetti.push({
-      id: i,
-      style: {
-        left: `${Math.random() * 100}%`,
-        animationDuration: `${Math.random() * 3 + 2}s`,
-        animationDelay: `${Math.random() * 0.5}s`,
-        fontSize: `${Math.random() * 20 + 10}px`,
-        rotate: Math.random() * 360
-      },
-      emoji: emojis[Math.floor(Math.random() * emojis.length)]
-    });
-  }
-  return confetti;
-};
-
 const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingListProps) => {
-  const [confetti, setConfetti] = useState<any[]>([]);
-  const [celebrating, setCelebrating] = useState(false);
   const [expandedView, setExpandedView] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<'normal' | 'goal'>('normal');
-
-  useEffect(() => {
-    setConfetti(generateConfetti());
-  }, []);
 
   const toggleDriverView = (index: number) => {
     setExpandedView(expandedView === index ? null : index);
@@ -123,27 +98,6 @@ const RankingList = ({ ranking, highlightTop = 5, monthlyGoal = GOAL }: RankingL
       </div>
 
       <div className={styles.leaderboard}>
-        {celebrating && (
-          <div className={styles.confettiContainer}>
-            {confetti.map((piece) => (
-              <motion.div
-                key={piece.id}
-                className={styles.confetti}
-                style={piece.style}
-                initial={{ y: -100, opacity: 1 }}
-                animate={{ y: '100vh', opacity: 0 }}
-                transition={{
-                  duration: parseFloat(piece.style.animationDuration),
-                  delay: parseFloat(piece.style.animationDelay),
-                  ease: 'linear'
-                }}
-              >
-                {piece.emoji}
-              </motion.div>
-            ))}
-          </div>
-        )}
-
         <AnimatePresence>
           {viewMode === 'normal' ? (
             ranking.map((driver, index) => {
