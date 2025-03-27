@@ -5,6 +5,7 @@ $primary: #FF5F6D;
 $text: #FFFFFF;
 
 .header {
+  max-width: 100% !important;
   display: flex;
   justify-content: space-between;
   align-items: center;

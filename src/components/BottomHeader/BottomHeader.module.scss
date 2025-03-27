@@ -6,6 +6,7 @@ $text: #FFFFFF;
 $text-dim: rgba(255, 255, 255, 0.7);
 
 .bottomHeader {
+  max-width: 100% !important;
   position: fixed;
   bottom: 0;
   left: 0;
