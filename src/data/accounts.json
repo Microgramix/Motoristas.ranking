@@ -1,0 +1,301 @@
+{
+  "accounts": [
+    {
+      "id": "teamFonseca-1",
+      "name": "Pedro M.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "97"
+    },
+    {
+      "id": "teamFonseca-2",
+      "name": "ZEC",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "97"
+    },
+    {
+      "id": "teamFonseca-3",
+      "name": "Patrice",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "97"
+    },
+    {
+      "id": "teamFonseca-4",
+      "name": "Fonseca J.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "97"
+    },
+    {
+      "id": "teamFonseca-5",
+      "name": "Heliomar",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "97"
+    },
+    {
+      "id": "teamIvan-1",
+      "name": "Nene C.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-2",
+      "name": "Tiago S.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-3",
+      "name": "Kelvin S.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-4",
+      "name": "Diogo M.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-5",
+      "name": "Renato S.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-6",
+      "name": "Arlindo",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamIvan-7",
+      "name": "Ivan S.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "19"
+    },
+    {
+      "id": "teamRui-1",
+      "name": "Rufino",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-2",
+      "name": "Jaime",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-3",
+      "name": "David P.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-4",
+      "name": "Sebastiao S.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-5",
+      "name": "Rui P.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-6",
+      "name": "Miguel",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamRui-7",
+      "name": "Cosimo",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "06"
+    },
+    {
+      "id": "teamSamuel-1",
+      "name": "Wilson G.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSamuel-2",
+      "name": "Samuel H.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSamuel-3",
+      "name": "Erik",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSamuel-4",
+      "name": "Jordan P.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSamuel-5",
+      "name": "Marcello",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSamuel-6",
+      "name": "Raju",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "69"
+    },
+    {
+      "id": "teamSushiKirchberg-1",
+      "name": "Rui Varela",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "16"
+    },
+    {
+      "id": "teamSushiKirchberg-2",
+      "name": "Farlom Miguel",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "16"
+    },
+    {
+      "id": "teamSushiKirchberg-3",
+      "name": "Fred",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "16"
+    },
+    {
+      "id": "teamSushiVille-1",
+      "name": "Ricardo A.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "22"
+    },
+    {
+      "id": "teamSushiVille-2",
+      "name": "Figarella",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "22"
+    },
+    {
+      "id": "teamSushiVille-3",
+      "name": "Wagner",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "22"
+    },
+    {
+      "id": "teamIndependent-1",
+      "name": "David P.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "86"
+    },
+    {
+      "id": "teamIndependent-2",
+      "name": "Filipe B.",
+      "avatar": "/avatars/placeholder.png",
+      "level": 1,
+      "achievements": [],
+      "token": "",
+      "password": "86"
+    }
+  ]
+}

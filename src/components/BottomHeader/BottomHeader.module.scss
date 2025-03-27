@@ -1,0 +1,49 @@
+@use "sass:math";
+
+$background: #0F0F1B;
+$primary: #FF5F6D;
+$text: #FFFFFF;
+$text-dim: rgba(255, 255, 255, 0.7);
+
+.bottomHeader {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: $background;
+  border-top: 1px solid rgba (255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-around;
+  padding: 0.5rem 0;
+  z-index: 1000;
+}
+
+.navButton {
+  background: none;
+  border: none;
+  color: $text;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  -webkit-transition: color 0.3s ease;
+  -moz-transition: color 0.3s ease;
+  -ms-transition: color 0.3s ease;
+  -o-transition: color 0.3s ease;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.icon {
+  font-size: 1.5rem;
+}
+
+.label {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+}
+

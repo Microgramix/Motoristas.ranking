@@ -1,0 +1,35 @@
+@use "sass:math";
+
+$background: #0F0F1B;
+$primary: #FF5F6D;
+$text: #FFFFFF;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: $background;
+  border-bottom: 1px solid rgba (255, 255, 255, 0.1);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  width: auto;
+
+}
+
+.notificationIcon {
+  position: relative;
+}
+
+.notificationBage {
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: $text;
+}

@@ -1,0 +1,813 @@
+@use "sass:math";
+
+// Variáveis de cores e gradientes
+$primary: #FF5F6D;
+$secondary: #00C9FF;
+$gold: #FFD700;
+$silver: #C0C0C0;
+$bronze: #CD7F32;
+$background: #0F0F1B;
+$card-bg: rgba(31, 31, 53, 0.8);
+$text: #FFFFFF;
+$text-dim: rgba(255, 255, 255, 0.7);
+
+$primary-gradient: linear-gradient(135deg, $primary, #FF8A5B);
+$secondary-gradient: linear-gradient(135deg, $secondary, #00D2FF);
+$gold-gradient: linear-gradient(135deg, $gold, #FFC600);
+$silver-gradient: linear-gradient(135deg, $silver, #E0E0E0);
+$bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
+
+// Mixins aprimorados
+@mixin glow($color, $spread: 15px, $opacity: 0.5) {
+  box-shadow: 0 0 $spread $color, 0 0 calc($spread * 2) rgba($color, $opacity);
+}
+
+@mixin text-glow($color, $spread: 8px, $opacity: 0.7) {
+  text-shadow: 0 0 $spread $color, 0 0 calc($spread * 2) rgba($color, $opacity);
+}
+
+@mixin flex-center($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == mobile {
+    @media (max-width: 768px) { @content; }
+  }
+}
+
+// Animações aprimoradas
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes particle-fall {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-120vh) translateX(50px); opacity: 0; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+
+// Container principal
+.gameContainer {
+  max-width: 900px;
+  margin: 2rem auto;
+  background: $background;
+  border-radius: 24px;
+  overflow: hidden;
+  position: relative;
+  padding: 1rem;
+  font-family: 'Montserrat', sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 20% 30%, rgba($primary, 0.1), transparent 70%);
+    z-index: -1;
+  }
+}
+
+// Partículas de fundo aprimoradas
+.particles {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 0;
+
+  .particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    opacity: 0;
+    animation: particle-fall calc(math.random(20) * 1s + 15s) linear infinite;
+    animation-delay: calc(math.random(10) * 1s + 1s);
+    -webkit-animation: particle-fall calc(math.random(20) * 1s + 15s) linear infinite;
+    
+    @for $i from 1 through 30 {
+      &:nth-child(#{$i}) {
+        $size: math.random(4) + 1;
+        width: #{$size}px;
+        height: #{$size}px;
+        top: math.random(100) + '%';
+        left: math.random(100) + '%';
+      }
+    }
+  }
+  
+}
+
+// Header aprimorado
+.header {
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  background: linear-gradient(180deg, rgba(15,15,27,0.9), rgba(31,31,53,0.7));
+  backdrop-filter: blur(5px);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 1rem;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, $primary, transparent);
+  }
+}
+
+.title {
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+  background: linear-gradient(90deg, $primary, $secondary);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  @include text-glow($primary);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+// Botões de toggle de visualização
+.viewToggle {
+  @include flex-center(row);
+  background: rgba(255,255,255,0.1);
+  border-radius: 50px;
+  padding: 5px;
+  max-width: 320px;
+  margin: 1rem auto;
+}
+
+.toggleButton {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  border: none;
+  background: none;
+  color: $text-dim;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &.active {
+    background: $primary-gradient;
+    color: white;
+    @include text-glow($primary);
+  }
+}
+
+// Estatísticas e meta
+.stats {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.goalMeter {
+  width: 100%;
+  max-width: 500px;
+}
+
+.goalLabel {
+  font-size: 0.9rem;
+  color: $text-dim;
+  margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+
+  &::after {
+    content: '🏁';
+  }
+}
+
+.goalProgress {
+  height: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.goalFill {
+  height: 100%;
+  background: $primary-gradient;
+  border-radius: 5px;
+  transition: width 1s ease;
+}
+
+.lastUpdate {
+  font-size: 0.8rem;
+  color: $text-dim;
+  margin-top: 0.5rem;
+}
+
+// Pódio 3D com aprimoramentos visuais
+.podiumContainer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  height: 220px;
+  margin: 2rem 0;
+  position: relative;
+  z-index: 2;
+}
+
+.podium {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  border-radius: 10px 10px 0 0;
+  padding: 1rem;
+  background: $card-bg;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  transition: transform 0.3s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    border-radius: 10px 10px 0 0;
+  }
+}
+
+.podium-0 {
+  height: 180px;
+  width: 130px;
+  z-index: 3;
+  transform: translateY(-25px);
+  background: linear-gradient(to bottom, rgba($gold, 0.1), $card-bg);
+  border: 1px solid rgba($gold, 0.5);
+
+  &::before {
+    background: $gold-gradient;
+  }
+  
+  .podiumPosition {
+    background: $gold-gradient;
+    @include text-glow($gold);
+  }
+}
+
+.podium-1 {
+  height: 140px;
+  width: 110px;
+  margin: 0 -15px;
+  z-index: 2;
+  background: linear-gradient(to bottom, rgba($silver, 0.1), $card-bg);
+  border: 1px solid rgba($silver, 0.5);
+
+  &::before {
+    background: $silver-gradient;
+  }
+  
+  .podiumPosition {
+    background: $silver-gradient;
+    @include text-glow($silver);
+  }
+}
+
+.podium-2 {
+  height: 100px;
+  width: 110px;
+  z-index: 1;
+  background: linear-gradient(to bottom, rgba($bronze, 0.1), $card-bg);
+  border: 1px solid rgba($bronze, 0.5);
+
+  &::before {
+    background: $bronze-gradient;
+  }
+  
+  .podiumPosition {
+    background: $bronze-gradient;
+    @include text-glow($bronze);
+  }
+}
+
+.podiumAvatar {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+  width: 60px;
+  height: 60px;
+  @include flex-center();
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  border: 2px solid;
+
+  &.gold { border-color: $gold; @include glow($gold); }
+  &.silver { border-color: $silver; @include glow($silver); }
+  &.bronze { border-color: $bronze; @include glow($bronze); }
+}
+
+.podiumLevel {
+  position: absolute;
+  bottom: -10px;
+  background: $primary;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.podiumName {
+  font-weight: 600;
+  margin: 0.5rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.podiumScore {
+  font-size: 0.9rem;
+  color: $secondary;
+  font-weight: 700;
+  @include text-glow($secondary);
+}
+
+.podiumPosition {
+  position: absolute;
+  top: -15px;
+  width: 40px;
+  height: 40px;
+  @include flex-center();
+  border-radius: 50%;
+  font-weight: 800;
+  color: black;
+}
+
+// Leaderboard e Cards
+.leaderboard {
+  padding: 1rem 2rem;
+  position: relative;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  padding: 1.2rem;
+  margin-bottom: 1rem;
+  background: $card-bg;
+  border-radius: 15px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  overflow: hidden;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255,255,255,0.1);
+  cursor: pointer;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+  }
+
+  &.expanded {
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+
+    .driverInfo {
+      border-bottom: 1px dashed rgba(255,255,255,0.2);
+      padding-bottom: 1rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+.rankBadge {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  @include flex-center();
+  margin-right: 1.5rem;
+}
+
+.rank {
+  font-size: 1.8rem;
+  font-weight: 800;
+  z-index: 1;
+}
+
+.medal {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  @include flex-center();
+  font-size: 1.5rem;
+}
+
+.driverAvatar {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  @include flex-center();
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+  margin-right: 1.5rem;
+  position: relative;
+  border: 2px solid rgba(255,255,255,0.2);
+}
+
+.levelBadge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  background: $primary-gradient;
+  color: white;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 10px;
+  font-weight: bold;
+  @include text-glow($primary);
+  border: 1px solid white;
+}
+
+.driverInfo {
+  flex: 1;
+}
+
+.nameProgress {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+  align-items: center;
+}
+
+.name {
+  font-weight: 700;
+  color: $text;
+  font-size: 1.2rem;
+  letter-spacing: 0.5px;
+}
+
+.deliveries {
+  color: $secondary;
+  font-weight: 700;
+  @include text-glow($secondary);
+  font-size: 1.1rem;
+}
+
+.progressBar {
+  height: 12px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: $primary-gradient;
+  border-radius: 6px;
+  transition: width 0.8s ease;
+}
+
+.progressText {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: bold;
+  @include text-glow($primary);
+}
+
+.ribbon {
+  position: absolute;
+  top: 15px;
+  right: -30px;
+  width: 120px;
+  padding: 4px 0;
+  color: white;
+  font-size: 0.8rem;
+  text-align: center;
+  transform: rotate(45deg);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.expandedInfo {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.3);
+  padding: 1rem;
+  border-radius: 0 0 15px 15px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  color: $text-dim;
+  margin-bottom: 0.3rem;
+}
+
+.statValue {
+  font-weight: 700;
+  color: $text;
+  font-size: 1rem;
+}
+
+.challengeButton {
+  width: 100%;
+  padding: 0.5rem;
+  background: $secondary-gradient;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  @include text-glow($secondary);
+
+  &:hover {
+    transform: translateY(-2px);
+    @include glow($secondary);
+  }
+}
+
+// Modo de visualização de meta
+.goalView {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.goalCard {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: $card-bg;
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.goalRank {
+  font-weight: 800;
+  margin-right: 1rem;
+  width: 30px;
+  text-align: center;
+}
+
+.goalAvatar {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+  width: 40px;
+  height: 40px;
+  @include flex-center();
+  background: rgba(0,0,0,0.3);
+  border-radius: 50%;
+}
+
+.goalInfo {
+  flex: 1;
+}
+
+.goalName {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.goalProgressContainer {
+  height: 10px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.goalProgressBar {
+  height: 100%;
+  background: $primary-gradient;
+  border-radius: 5px;
+  position: relative;
+  transition: width 1s ease;
+}
+
+.goalProgressText {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: bold;
+}
+
+.goalAchieved {
+  margin-left: 1rem;
+  padding: 0.3rem 0.5rem;
+  background: rgba($gold, 0.2);
+  border: 1px solid $gold;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: $gold;
+  @include text-glow($gold);
+}
+
+// Confetti aprimorado
+.confettiContainer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.confetti {
+  position: absolute;
+  font-size: 1rem;
+  animation: confetti-fall 3s linear forwards;
+  z-index: 11;
+}
+
+// Footer refinado
+.footer {
+  padding: 1.5rem 2rem;
+  background: linear-gradient(180deg, rgba(31,31,53,0.7), rgba(15,15,27,0.9));
+  border-top: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(5px);
+  @include flex-center(column);
+  gap: 1rem;
+}
+
+.teamStats {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 500px;
+}
+
+.teamStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  span:first-child {
+    font-size: 0.8rem;
+    color: $text-dim;
+    margin-bottom: 0.3rem;
+  }
+  span:last-child {
+    font-weight: 700;
+    color: $text;
+  }
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 500px;
+}
+
+.powerupButton {
+  padding: 0.8rem 1.5rem;
+  background: $primary-gradient;
+  border: none;
+  border-radius: 50px;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+  @include text-glow($primary);
+  letter-spacing: 1px;
+
+  &:hover {
+    transform: translateY(-2px);
+    @include glow($primary);
+  }
+}
+
+.timer {
+  color: $text-dim;
+  font-size: 0.9rem;
+
+  span {
+    color: $text;
+    font-weight: 600;
+  }
+}
+
+// Efeito de luz aprimorado para o top 1
+.championGlow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 300px;
+  background: radial-gradient(circle at center, rgba($gold, 0.15), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pulse 3s infinite alternate;
+}
+
+// Responsividade aprimorada
+@include respond-to(mobile) {
+  .gameContainer {
+    border-radius: 0;
+    padding: 0.5rem;
+  }
+  .header {
+    padding: 1.5rem 1rem;
+  }
+  .title {
+    font-size: 1.8rem;
+  }
+  .podiumContainer {
+    height: 180px;
+    margin: 1rem 0;
+  }
+  .podium-0 {
+    height: 140px;
+    width: 100px;
+  }
+  .podium-1 {
+    height: 100px;
+    width: 80px;
+  }
+  .podium-2 {
+    height: 70px;
+    width: 80px;
+  }
+  .podiumAvatar {
+    font-size: 2rem;
+    width: 50px;
+    height: 50px;
+  }
+  .leaderboard {
+    padding: 1rem;
+  }
+  .card {
+    padding: 1rem;
+  }
+  .rankBadge {
+    width: 40px;
+    height: 40px;
+    margin-right: 1rem;
+  }
+  .rank {
+    font-size: 1.5rem;
+  }
+  .driverAvatar {
+    width: 50px;
+    height: 50px;
+    margin-right: 1rem;
+    font-size: 1.8rem;
+  }
+  .footer {
+    padding: 1rem;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .teamStats {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .actionButtons {
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .powerupButton {
+    width: 100%;
+  }
+}
