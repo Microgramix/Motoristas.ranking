@@ -47,6 +47,20 @@ const App: React.FC = () => {
     fetchData();
   }, [selectedDate]);
 
+  // Efeito para resetar o zoom em mobile
+  useEffect(() => {
+    const resetViewport = () => {
+      document.documentElement.style.zoom = '1';
+      const viewport = document.querySelector("meta[name=viewport]");
+      if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
+      }
+    };
+    
+    window.addEventListener('resize', resetViewport);
+    return () => window.removeEventListener('resize', resetViewport);
+  }, []);
+
   return (
     <BrowserRouter>
       <div className={styles.appContainer}>

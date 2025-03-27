@@ -8,9 +8,20 @@ $background: #0F0F1B;
 $text: #FFFFFF;
 $text-dim: rgba(255, 255, 255, 0.7);
 
+/* Reset importante para mobile */
+html, body, #root {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Impede rolagem horizontal */
+  -webkit-text-size-adjust: 100%; /* Previne zoom automático no iOS */
+  touch-action: manipulation; /* Melhora a resposta ao toque */
+}
+
 /* Se quiser usar a mesma fonte e sombras do Ranking */
 .dashboard {
-  width: 100%;
+  width: 100vw;
   min-height: 100vh;     /* Garante que ocupe toda a altura da tela */
   position: relative;
   font-family: 'Montserrat', sans-serif;
@@ -23,7 +34,7 @@ $text-dim: rgba(255, 255, 255, 0.7);
   /* Gradiente radial no background, igual ao Ranking */
   &::before {
     content: '';
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: radial-gradient(
       circle at 20% 30%,
@@ -35,7 +46,7 @@ $text-dim: rgba(255, 255, 255, 0.7);
 }
 
 .dashboardTitle {
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-size: clamp(1.5rem, 5vw, 2rem);
   font-weight: 800;
   margin-bottom: 1rem;
   background: linear-gradient(90deg, $primary, $secondary);
@@ -45,6 +56,7 @@ $text-dim: rgba(255, 255, 255, 0.7);
   text-align: center;
   letter-spacing: 2px;
   text-transform: uppercase;
+  padding: 0 1rem;
 }
 
 /* Exemplo de cartão de conta */
@@ -60,6 +72,9 @@ $text-dim: rgba(255, 255, 255, 0.7);
   &:hover {
     transform: translateY(-5px);
   }
+}
+.accountCard, .loginButton, .inputField {
+  min-height: 44px; /* Tamanho mínimo recomendado para toque */
 }
 
 /* Caso use login */
@@ -110,4 +125,25 @@ html, body {
   background: $background; /* se quiser que todo o body tenha a cor do dashboard */
   min-height: 100vh;
   box-sizing: border-box;
+}
+
+.inputField {
+  font-size: 16px; /* Previne zoom automático no iOS ao focar */
+  
+  @media (max-width: 480px) {
+    padding: 0.5rem;
+    font-size: 14px;
+  }
+}
+
+/* Media queries específicas para mobile */
+@media (max-width: 480px) {
+  .dashboard {
+    padding: 0.5rem;
+  }
+  
+  .accountCard {
+    margin: 0.5rem 0;
+    padding: 0.75rem;
+  }
 }
