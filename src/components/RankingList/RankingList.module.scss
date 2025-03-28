@@ -72,7 +72,7 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   font-family: 'Montserrat', sans-serif;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
   z-index: 1;
-  width: 100%;
+  width: 100% !important;
 
   &::before {
     content: '';
@@ -737,7 +737,7 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
     border-radius: 0;
     margin: 0;
     padding: 0;
-    width: 100%;
+    width: 100% !important;
     min-height: 100vh;
 }
   .header {
