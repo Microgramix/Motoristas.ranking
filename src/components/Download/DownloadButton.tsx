@@ -3,21 +3,21 @@ import React, { useEffect, useState } from 'react';
 import styles from './DownloadButton.module.scss';
 
 const DownloadButton: React.FC = () => {
-  // Armazena o evento beforeinstallprompt para dispositivos que o suportam
+  // Armazena o evento beforeinstallprompt (para Android/Chrome)
   const [deferredPrompt, setDeferredPrompt] = useState<
     (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null
   >(null);
   // Detecta se o dispositivo é iOS
   const [isIos, setIsIos] = useState(false);
-  // Estado para exibir uma mensagem de ajuda em iOS
+  // Estado para exibir o modal de instruções para iOS
   const [showIosHelp, setShowIosHelp] = useState(false);
 
   useEffect(() => {
-    // Verifica o userAgent para identificar iOS
+    // Verifica o userAgent para identificar dispositivos iOS
     const ua = window.navigator.userAgent.toLowerCase();
     setIsIos(/iphone|ipad|ipod/.test(ua));
 
-    // Listener para beforeinstallprompt (funciona em Android/Chrome)
+    // Listener para beforeinstallprompt (Android/Chrome)
     const beforeInstallHandler = (
       e: Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }
     ) => {
@@ -34,26 +34,25 @@ const DownloadButton: React.FC = () => {
 
   const handleInstallClick = async () => {
     if (isIos) {
-      // Para iOS, mostra uma mensagem de ajuda
+      // Em iOS, mostra o modal com as instruções de instalação
       setShowIosHelp(true);
       return;
     }
-    if (!deferredPrompt) return;
-
-    // Exibe o prompt nativo para instalação (Android/Chrome)
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      console.log('App instalado com sucesso!');
+    if (deferredPrompt) {
+      // Em dispositivos que suportam beforeinstallprompt, exibe o prompt nativo
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('App instalado com sucesso!');
+      } else {
+        console.log('Instalação cancelada pelo usuário.');
+      }
+      setDeferredPrompt(null);
     } else {
-      console.log('Instalação cancelada pelo usuário.');
+      // Se não houver deferredPrompt, exibe uma mensagem simples
+      alert('Instalação não disponível. Tente através do navegador.');
     }
-    setDeferredPrompt(null);
   };
-
-  // O botão será exibido se for iOS ou se houver deferredPrompt
-  const shouldRenderButton = isIos || deferredPrompt !== null;
-  if (!shouldRenderButton) return null;
 
   return (
     <div className={styles.downloadContainer}>
@@ -69,14 +68,7 @@ const DownloadButton: React.FC = () => {
         </svg>
       </button>
 
-      {/* Mensagem de ajuda para iOS */}
-      {isIos && (
-        <p className={styles.iosHelp}>
-          Para instalar no iOS, toque no ícone de compartilhamento do Safari e selecione "Adicionar à Tela de Início".
-        </p>
-      )}
-
-      {/* Modal de ajuda opcional para iOS */}
+      {/* Modal de ajuda para dispositivos iOS */}
       {showIosHelp && (
         <div className={styles.iosHelpModal}>
           <p>
