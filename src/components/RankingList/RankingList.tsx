@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useState } from 'react';
 import styles from './RankingList.module.scss';
 import Podium from './Podium';
