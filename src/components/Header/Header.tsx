@@ -8,7 +8,6 @@ const Header: React.FC = () => {
   return (
     <header className={styles.header}>
       <div className={styles.logoContainer}>
-        {/* Substitua '/logo.png' pela URL ou import do seu logo */}
         <img src="/logo.png" alt="Fastrack" className={styles.logo} />
       </div>
       
@@ -17,7 +16,6 @@ const Header: React.FC = () => {
 
       <div className={styles.notificationIcon}>
         <motion.div whileTap={{ scale: 0.9 }} className={styles.notificationBadge}>
-          {/* Ícone de notificação */}
           <span>🔔</span>
         </motion.div>
       </div>

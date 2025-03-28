@@ -1,9 +1,16 @@
+// DownloadButton.module.scss
 $primary: #FF5F6D;
 $text: #FFFFFF;
 
+.downloadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .downloadButton {
   background: transparent;
-  border:none;
+  border: none;
   cursor: pointer;
   padding: 0.5rem;
   display: flex;
@@ -11,16 +18,38 @@ $text: #FFFFFF;
   justify-content: center;
   color: $text;
   transition: transform 0.2s ease;
-  -webkit-transition: transform 0.2s ease;
-  -moz-transition: transform 0.2s ease;
-  -ms-transition: transform 0.2s ease;
-  -o-transition: transform 0.2s ease;
 
   &:hover {
     transform: scale(1.1);
-    -webkit-transform: scale(1.1);
-    -moz-transform: scale(1.1);
-    -ms-transform: scale(1.1);
-    -o-transform: scale(1.1);
+  }
 }
+
+.iosHelp {
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
+  color: $text;
+  text-align: center;
+}
+
+.iosHelpModal {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -30%);
+  background: rgba(0, 0, 0, 0.8);
+  color: $text;
+  padding: 1rem;
+  border-radius: 8px;
+  max-width: 90%;
+  text-align: center;
+
+  button {
+    margin-top: 1rem;
+    background: $primary;
+    border: none;
+    padding: 0.5rem 1rem;
+    color: $text;
+    cursor: pointer;
+    border-radius: 4px;
+  }
 }
