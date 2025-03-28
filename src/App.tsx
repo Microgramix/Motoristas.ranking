@@ -73,7 +73,7 @@ const App: React.FC = () => {
                 <>
                   <h1 className={styles.title}>🏆 Ranking de Entregas</h1>
                   <div className={styles.filters}>
-                    <select 
+                    <select
                       value={selectedDate} 
                       onChange={(e) => setSelectedDate(e.target.value)}
                     >

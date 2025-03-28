@@ -20,7 +20,7 @@ const BottomHeader: React.FC = () => {
         <span className={styles.icon}>🏁</span>
         <span className={styles.label}>Desafios</span>
       </motion.button>
-      <Link to="/dashboard" className={styles.link}>
+      <Link to="/" className={styles.link}>
         <motion.button whileTap={{ scale: 0.9 }} className={styles.navButton}>
           <span className={styles.icon}>👤</span>
           <span className={styles.label}>Perfil</span>
