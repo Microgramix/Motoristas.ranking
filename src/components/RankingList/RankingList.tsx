@@ -19,17 +19,22 @@ interface RankingListProps {
   monthlyGoal?: number; // Valor padrão usado se não for filtrado por período
 }
 
-const RankingList: React.FC<RankingListProps> = ({ ranking, highlightTop = 5, monthlyGoal = 600 }) => {
-  // viewMode para alternar entre ranking e meta (como já existe)
+const RankingList: React.FC<RankingListProps> = ({
+  ranking,
+  highlightTop = 5,
+  monthlyGoal = 600,
+}) => {
+  // viewMode para alternar entre ranking e meta
   const [viewMode, setViewMode] = useState<'normal' | 'goal'>('normal');
   // Estado para selecionar o período: diário, semanal ou mensal
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('weekly');
 
-  // Mapeia as metas para cada período; ajuste os valores conforme necessário
+  // Definimos a meta para períodos diário e semanal de forma fixa,
+  // e para o mensal usamos o valor passado via props (monthlyGoal)
   const goalMapping = {
-    daily: 20,    // ex.: meta de 40 entregas por dia
-    weekly: 130,  // meta de 120 entregas por semana
-    monthly: 520, // meta de 600 entregas por mês (valor padrão)
+    daily: 20,    // ex.: meta de 20 entregas por dia
+    weekly: 130,  // meta de 130 entregas por semana
+    monthly: monthlyGoal, // utiliza o valor recebido
   };
 
   const goal = goalMapping[period];
@@ -43,8 +48,6 @@ const RankingList: React.FC<RankingListProps> = ({ ranking, highlightTop = 5, mo
       </div>
 
       <div className={styles.header}>
-        
-
         {/* Alternador entre visualizações: Ranking ou Meta */}
         <div className={styles.viewToggle}>
           <button
@@ -61,7 +64,7 @@ const RankingList: React.FC<RankingListProps> = ({ ranking, highlightTop = 5, mo
           </button>
         </div>
 
-        {/* Novo seletor de período */}
+        {/* Seletor de período */}
         <div className={styles.periodToggle}>
           <button
             className={`${styles.periodButton} ${period === 'daily' ? styles.active : ''}`}
@@ -90,8 +93,7 @@ const RankingList: React.FC<RankingListProps> = ({ ranking, highlightTop = 5, mo
                 ? 'Meta Diário'
                 : period === 'weekly'
                 ? 'Meta Semanal'
-                : 'Meta Mensal'}
-              : {goal} entregas
+                : 'Meta Mensal'}: {goal} entregas
             </div>
             <div className={styles.goalProgress}>
               <div
