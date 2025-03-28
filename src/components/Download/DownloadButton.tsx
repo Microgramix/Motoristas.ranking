@@ -1,4 +1,3 @@
-// DownloadButton.tsx
 import React, { useEffect, useState } from 'react';
 import styles from './DownloadButton.module.scss';
 
@@ -9,11 +8,11 @@ interface BeforeInstallPromptEvent extends Event {
 }
 
 const DownloadButton: React.FC = () => {
-  // Armazena o evento beforeinstallprompt para dispositivos que o suportam
+  // Armazena o evento beforeinstallprompt (para Android/Chrome)
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   // Detecta se o dispositivo é iOS
   const [isIos, setIsIos] = useState(false);
-  // Estado para exibir o modal de instruções para iOS
+  // Estado para exibir o popup/modal com instruções para iOS
   const [showIosHelp, setShowIosHelp] = useState(false);
 
   useEffect(() => {
@@ -36,12 +35,12 @@ const DownloadButton: React.FC = () => {
 
   const handleInstallClick = async () => {
     if (isIos) {
-      // Em iOS, mostra o modal com as instruções de instalação
+      // Em iOS, abre o popup com instruções de instalação
       setShowIosHelp(true);
       return;
     }
     if (deferredPrompt) {
-      // Exibe o prompt nativo para instalação (Android/Chrome)
+      // Para Android/Chrome: chama o prompt nativo
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
@@ -51,7 +50,7 @@ const DownloadButton: React.FC = () => {
       }
       setDeferredPrompt(null);
     } else {
-      // Se não houver deferredPrompt, exibe uma mensagem
+      // Caso não haja deferredPrompt (ou outro navegador sem suporte)
       alert('Instalação não disponível. Tente através do navegador.');
     }
   };
@@ -61,22 +60,23 @@ const DownloadButton: React.FC = () => {
       <button onClick={handleInstallClick} className={styles.downloadButton} title="Instalar App">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24" 
-          height="24" 
-          fill="currentColor" 
+          width="24"
+          height="24"
+          fill="currentColor"
           viewBox="0 0 24 24"
         >
           <path d="M5 20h14v-2H5v2zm7-18L5 9h4v6h4V9h4l-7-7z" />
         </svg>
       </button>
 
-      {/* Modal de ajuda para dispositivos iOS */}
       {showIosHelp && (
         <div className={styles.iosHelpModal}>
-          <p>
-            Para instalar o app no seu dispositivo iOS, abra o menu de compartilhamento do Safari (ícone de compartilhamento) e selecione "Adicionar à Tela de Início".
-          </p>
-          <button onClick={() => setShowIosHelp(false)}>Fechar</button>
+          <div className={styles.modalContent}>
+            <p>
+              Para instalar o app no seu dispositivo iOS, clique no botao para compartilhar do Safari (ícone de compartilhamento) e selecione "Adicionar à Tela de Início".
+            </p>
+            <button onClick={() => setShowIosHelp(false)}>Fechar</button>
+          </div>
         </div>
       )}
     </div>

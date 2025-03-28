@@ -7,23 +7,23 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'autoUpdate', // atualiza SW automaticamente
+      registerType: 'autoUpdate',
       manifest: {
         name: 'Fastrack Ranking',
         short_name: 'Fastranking',
         description: 'Um app incrível em PWA',
         start_url: '/',
-        display: 'standalone',
+        display: 'fullscreen',  // Modo full screen
         background_color: '#ffffff',
         theme_color: '#ffffff',
         icons: [
           {
-            src: 'icons/fasticon.png', // ajuste o caminho
+            src: 'icons/fasticon.png',
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'icons/fasticon.png', // ajuste o caminho
+            src: 'icons/fasticon.png',
             sizes: '512x512',
             type: 'image/png'
           }
