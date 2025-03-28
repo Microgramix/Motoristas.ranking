@@ -2,11 +2,15 @@
 import React, { useEffect, useState } from 'react';
 import styles from './DownloadButton.module.scss';
 
+// Define a interface para o evento beforeinstallprompt
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: string }>;
+}
+
 const DownloadButton: React.FC = () => {
-  // Armazena o evento beforeinstallprompt (para Android/Chrome)
-  const [deferredPrompt, setDeferredPrompt] = useState<
-    (Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }) | null
-  >(null);
+  // Armazena o evento beforeinstallprompt para dispositivos que o suportam
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   // Detecta se o dispositivo é iOS
   const [isIos, setIsIos] = useState(false);
   // Estado para exibir o modal de instruções para iOS
@@ -18,15 +22,13 @@ const DownloadButton: React.FC = () => {
     setIsIos(/iphone|ipad|ipod/.test(ua));
 
     // Listener para beforeinstallprompt (Android/Chrome)
-    const beforeInstallHandler = (
-      e: Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: string }> }
-    ) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
+    const beforeInstallHandler = (e: Event) => {
+      const ev = e as BeforeInstallPromptEvent;
+      ev.preventDefault();
+      setDeferredPrompt(ev);
     };
 
     window.addEventListener('beforeinstallprompt', beforeInstallHandler);
-
     return () => {
       window.removeEventListener('beforeinstallprompt', beforeInstallHandler);
     };
@@ -39,7 +41,7 @@ const DownloadButton: React.FC = () => {
       return;
     }
     if (deferredPrompt) {
-      // Em dispositivos que suportam beforeinstallprompt, exibe o prompt nativo
+      // Exibe o prompt nativo para instalação (Android/Chrome)
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
@@ -49,7 +51,7 @@ const DownloadButton: React.FC = () => {
       }
       setDeferredPrompt(null);
     } else {
-      // Se não houver deferredPrompt, exibe uma mensagem simples
+      // Se não houver deferredPrompt, exibe uma mensagem
       alert('Instalação não disponível. Tente através do navegador.');
     }
   };
