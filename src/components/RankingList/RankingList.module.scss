@@ -1,4 +1,6 @@
-// Variáveis de cores e gradientes
+// ======================================================
+// VARIÁVEIS DE CORES, GRADIENTES E CONFIGURAÇÕES GLOBAIS
+// ======================================================
 $primary: #FF5F6D;
 $secondary: #00C9FF;
 $gold: #FFD700;
@@ -15,7 +17,9 @@ $gold-gradient: linear-gradient(135deg, $gold, #FFC600);
 $silver-gradient: linear-gradient(135deg, $silver, #E0E0E0);
 $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
 
-// Mixins aprimorados
+// ======================================================
+// MIXINS
+// ======================================================
 @mixin glow($color, $spread: 15px, $opacity: 0.5) {
   box-shadow: 0 0 $spread $color, 0 0 calc($spread * 2) rgba($color, $opacity);
 }
@@ -37,7 +41,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   }
 }
 
-// Animações aprimoradas
+// ======================================================
+// KEYFRAMES / ANIMAÇÕES
+// ======================================================
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-10px); }
@@ -60,7 +66,40 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
 
-// Container principal
+// ======================================================
+// ESTILOS PARA O SELETOR DE PERÍODO (DIÁRIO, SEMANAL, MENSAL)
+// ======================================================
+.periodToggle {
+  @include flex-center(row);
+  gap: 0.5rem;
+  margin: 1rem auto;
+}
+
+
+.periodButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: none;
+  color: $text-dim;
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+
+  &:hover {
+    background: rgba(255,255,255,0.15);
+  }
+
+  &.active {
+    background: $primary-gradient;
+    color: white;
+    @include text-glow($primary);
+  }
+}
+
+// ======================================================
+// ESTILOS DO CONTAINER PRINCIPAL (GAME CONTAINER)
+// ======================================================
 .gameContainer {
   max-width: 900px;
   margin: 2rem auto;
@@ -83,17 +122,19 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   }
 }
 
-// Partículas de fundo aprimoradas
+// ======================================================
+// ESTILOS DAS PARTÍCULAS DE FUNDO
+// ======================================================
 .particles {
   position: absolute;
   inset: 0;
   overflow: hidden;
   z-index: 0;
-
-  
 }
 
-// Header aprimorado
+// ======================================================
+// ESTILOS DO HEADER
+// ======================================================
 .header {
   padding: 2rem;
   text-align: center;
@@ -127,7 +168,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   text-transform: uppercase;
 }
 
-// Botões de toggle de visualização
+// ======================================================
+// BOTÕES DE TOGGLE DE VISUALIZAÇÃO (RANKING / META)
+// ======================================================
 .viewToggle {
   @include flex-center(row);
   background: rgba(255,255,255,0.1);
@@ -155,7 +198,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   }
 }
 
-// Estatísticas e meta
+// ======================================================
+// ESTILOS DE ESTATÍSTICAS E META
+// ======================================================
 .stats {
   margin-top: 1.5rem;
   display: flex;
@@ -201,7 +246,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   margin-top: 0.5rem;
 }
 
-// Pódio 3D com aprimoramentos visuais
+// ======================================================
+// ESTILOS DO PODIUM (TOP 3)
+// ======================================================
 .podiumContainer {
   display: flex;
   justify-content: center;
@@ -340,7 +387,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   color: black;
 }
 
-// Leaderboard e Cards
+// ======================================================
+// ESTILOS DO LEADERBOARD E DOS CARDS
+// ======================================================
 .leaderboard {
   padding: 1rem 2rem;
   position: relative;
@@ -536,6 +585,7 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   cursor: pointer;
   transition: transform 0.3s ease;
   @include text-glow($secondary);
+  letter-spacing: 1px;
 
   &:hover {
     transform: translateY(-2px);
@@ -543,7 +593,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   }
 }
 
-// Modo de visualização de meta
+// ======================================================
+// ESTILOS DO GOAL VIEW (META)
+// ======================================================
 .goalView {
   display: flex;
   flex-direction: column;
@@ -622,7 +674,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   @include text-glow($gold);
 }
 
-// Confetti aprimorado
+// ======================================================
+// ESTILOS DO CONFETTI (OPCIONAL)
+// ======================================================
 .confettiContainer {
   position: absolute;
   inset: 0;
@@ -638,7 +692,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   z-index: 11;
 }
 
-// Footer refinado
+// ======================================================
+// ESTILOS DO FOOTER
+// ======================================================
 .footer {
   padding: 1.5rem 2rem;
   background: linear-gradient(180deg, rgba(31,31,53,0.7), rgba(15,15,27,0.9));
@@ -707,7 +763,9 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   }
 }
 
-// Efeito de luz aprimorado para o top 1
+// ======================================================
+// EFEITO DE LUZ (CHAMPION GLOW)
+// ======================================================
 .championGlow {
   position: absolute;
   top: 0;
@@ -720,15 +778,16 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   animation: pulse 3s infinite alternate;
 }
 
-// Responsividade aprimorada
+// ======================================================
+// RESPONSIVIDADE
+// ======================================================
 @include respond-to(mobile) {
-
-  .viewToggle{
+  .viewToggle {
     width: 100%;
     max-width: none;
   }
 
-  .toggleButton{
+  .toggleButton {
     padding: 0.5rem;
     font-size: 0.9rem;
   }
@@ -739,17 +798,21 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
     padding: 0;
     width: 100% !important;
     min-height: 100vh;
-}
+  }
+  
   .header {
     padding: 1.5rem 1rem;
   }
+  
   .title {
     font-size: 1.8rem;
   }
+  
   .podiumContainer {
     height: 160px;
     margin: 1rem 0;
   }
+  
   .podium-0 {
     height: 120px;
     width: 90px;
@@ -758,21 +821,23 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
     -moz-transform: translateY(-15px);
     -ms-transform: translateY(-15px);
     -o-transform: translateY(-15px);
-}
+  }
+  
   .podium-1 {
     height: 90px;
     width: 70px;
     margin: 0 -10px;
   }
+  
   .podium-2 {
     height: 70px;
     width: 70px;
   }
-
+  
   .podiumName {
     font-size: 0.8rem;
   }
-
+  
   .podiumScore {
     font-size: 0.8rem;
   }
@@ -782,52 +847,97 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
     width: 50px;
     height: 50px;
   }
+  
   .leaderboard {
     padding: 1rem;
   }
+  
   .card {
     padding: 1rem;
     margin-bottom: 0.8rem;
+    
     &:last-child {
       margin-bottom: 0;
     }
   }
+  
   .rankBadge {
     margin-right: 0.8rem;
   }
-  .name{
+  
+  .name {
     font-size: 1rem;
   }
-
+  
   .deliveries {
     font-size: 1rem;
-
   }
-
+  
   .rank {
     font-size: 1.5rem;
   }
+  
   .driverAvatar {
     width: 50px;
     height: 50px;
     margin-right: 1rem;
     font-size: 1.8rem;
   }
+  
   .footer {
     padding: 1rem;
     flex-direction: column;
     gap: 1rem;
   }
+  
   .teamStats {
     flex-direction: column;
     gap: 0.5rem;
     align-items: center;
   }
+  
   .actionButtons {
     flex-direction: column;
     gap: 1rem;
   }
+  
   .powerupButton {
     width: 100%;
   }
+}
+
+
+// Estilos para o Modal (adicione ao final do seu SCSS ou na seção correspondente)
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: $card-bg;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+  backdrop-filter: blur(5px);
+}
+
+.closeButton {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: $text;
+  cursor: pointer;
 }

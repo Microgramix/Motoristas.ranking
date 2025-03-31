@@ -1,0 +1,61 @@
+// Variáveis de cores e gradientes
+$primary: #FF5F6D;
+$secondary: #00C9FF;
+$gold: #FFD700;
+$silver: #C0C0C0;
+$bronze: #CD7F32;
+$background: #0F0F1B;
+$card-bg: rgba(31, 31, 53, 0.8);
+$text: #FFFFFF;
+$text-dim: rgba(255, 255, 255, 0.7);
+
+$primary-gradient: linear-gradient(135deg, $primary, #FF8A5B);
+$secondary-gradient: linear-gradient(135deg, $secondary, #00D2FF);
+$gold-gradient: linear-gradient(135deg, $gold, #FFC600);
+$silver-gradient: linear-gradient(135deg, $silver, #E0E0E0);
+$bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
+
+// Mixins aprimorados
+@mixin glow($color, $spread: 15px, $opacity: 0.5) {
+  box-shadow: 0 0 $spread $color, 0 0 calc($spread * 2) rgba($color, $opacity);
+}
+
+@mixin text-glow($color, $spread: 8px, $opacity: 0.7) {
+  text-shadow: 0 0 $spread $color, 0 0 calc($spread * 2) rgba($color, $opacity);
+}
+
+@mixin flex-center($direction: row) {
+  display: flex;
+  flex-direction: $direction;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == mobile {
+    @media (max-width: 768px) { @content; }
+  }
+}
+
+// Animações aprimoradas
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes particle-fall {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(-120vh) translateX(50px); opacity: 0; }
+}
+
+@keyframes confetti-fall {
+  0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
