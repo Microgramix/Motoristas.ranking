@@ -10,27 +10,23 @@ import styles from './App.module.scss';
 
 interface RankingItem {
   name: string;
-  deliveries: number;       // Valor agregado (de acordo com o filtro aplicado)
-  weeklyDeliveries: number; // Soma dos registros da semana atual (segunda a domingo)
+  deliveries: number;
+  weeklyDeliveries: number;
   lastUpdate?: string;
-  trend: number[];          // Histórico total (array com os valores para cada data)
-  weeklyTrend: number[];    // Histórico dos dias da semana atual
-  trendDates: string[];     // Datas correspondentes ao histórico
+  trend: number[];
+  weeklyTrend: number[];
+  trendDates: string[];
 }
 
 const App: React.FC = () => {
-  // Estado para filtro diário (data selecionada)
   const [selectedDate, setSelectedDate] = useState(
     new Date().toISOString().substring(0, 10)
   );
-  // Estado para escolher o período: 'daily', 'weekly' ou 'monthly'
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-  // Estado para alternar entre visualizações: Ranking (normal) ou Meta (goal)
   const [viewMode, setViewMode] = useState<'normal' | 'goal'>('normal');
   const [ranking, setRanking] = useState<RankingItem[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-  // Mapeamento de metas para cada período
   const goalMapping = {
     daily: 20,
     weekly: 130,
@@ -38,7 +34,6 @@ const App: React.FC = () => {
   };
   const goal = goalMapping[period];
 
-  // Função auxiliar para calcular a segunda-feira (início da semana)
   const getMonday = (date: Date): Date => {
     const day = date.getDay();
     const diff = day === 0 ? -6 : 1 - day;
@@ -51,13 +46,10 @@ const App: React.FC = () => {
       const dates = new Set<string>();
       const today = new Date();
       const monday = getMonday(today);
+      const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const todayStr = today.toISOString().substring(0, 10);
       dates.add(todayStr);
 
-      // Se o período for diário, usamos a data selecionada; senão, consideramos todos os registros
-      const filterByDate = period === 'daily' ? selectedDate : '';
-
-      // Inicializa os dados dos motoristas (mesmo sem registros para a data filtrada)
       const allDrivers: Record<
         string,
         {
@@ -71,42 +63,55 @@ const App: React.FC = () => {
 
       teamsSnapshot.forEach((teamDoc) => {
         const teamData = teamDoc.data();
+      
         Object.entries(teamData).forEach(([date, drivers]) => {
+          dates.add(date); // ✅ adiciona TODAS as datas
+      
+          const recordDate = new Date(date);
+          const isCurrentWeek = recordDate >= monday;
+          const isCurrentMonth = recordDate >= firstDayOfMonth;
+          const includeDelivery =
+            (period === 'daily' && date === selectedDate) ||
+            (period === 'weekly' && isCurrentWeek) ||
+            (period === 'monthly' && isCurrentMonth);
+      
+          if (!includeDelivery) return;
+
           dates.add(date);
-          Object.entries(drivers as Record<string, number>).forEach(
-            ([driver, count]) => {
-              if (!allDrivers[driver]) {
-                allDrivers[driver] = {
-                  deliveries: 0,
-                  weeklyDeliveries: 0,
-                  lastUpdate: undefined,
-                  trend: {},
-                  weeklyTrend: {},
-                };
-              }
-              if (!filterByDate || date === filterByDate) {
-                const currentCount = Number(count);
-                allDrivers[driver].deliveries += currentCount;
-                const recordDate = new Date(date);
-                const isCurrentWeek = recordDate >= monday;
-                if (isCurrentWeek) {
-                  allDrivers[driver].weeklyDeliveries += currentCount;
-                }
-                if (
-                  !allDrivers[driver].lastUpdate ||
-                  recordDate > new Date(allDrivers[driver].lastUpdate!)
-                ) {
-                  allDrivers[driver].lastUpdate = date;
-                }
-                allDrivers[driver].trend[date] =
-                  (allDrivers[driver].trend[date] || 0) + currentCount;
-                if (isCurrentWeek) {
-                  allDrivers[driver].weeklyTrend[date] =
-                    (allDrivers[driver].weeklyTrend[date] || 0) + currentCount;
-                }
-              }
+
+          Object.entries(drivers as Record<string, number>).forEach(([driver, count]) => {
+            if (!allDrivers[driver]) {
+              allDrivers[driver] = {
+                deliveries: 0,
+                weeklyDeliveries: 0,
+                lastUpdate: undefined,
+                trend: {},
+                weeklyTrend: {},
+              };
             }
-          );
+
+            const currentCount = Number(count);
+            allDrivers[driver].deliveries += currentCount;
+
+            if (isCurrentWeek) {
+              allDrivers[driver].weeklyDeliveries += currentCount;
+            }
+
+            if (
+              !allDrivers[driver].lastUpdate ||
+              recordDate > new Date(allDrivers[driver].lastUpdate!)
+            ) {
+              allDrivers[driver].lastUpdate = date;
+            }
+
+            allDrivers[driver].trend[date] =
+              (allDrivers[driver].trend[date] || 0) + currentCount;
+
+            if (isCurrentWeek) {
+              allDrivers[driver].weeklyTrend[date] =
+                (allDrivers[driver].weeklyTrend[date] || 0) + currentCount;
+            }
+          });
         });
       });
 
@@ -118,13 +123,14 @@ const App: React.FC = () => {
           deliveries,
           weeklyDeliveries,
           lastUpdate,
-          trend: sortedTrendDates.map(date => trend[date] || 0),
+          trend: sortedTrendDates.map((date) => trend[date] || 0),
           weeklyTrend: sortedTrendDates
-            .filter(date => new Date(date) >= monday)
-            .map(date => weeklyTrend[date] || 0),
+            .filter((date) => new Date(date) >= monday)
+            .map((date) => weeklyTrend[date] || 0),
           trendDates: sortedTrendDates,
         }))
         .sort((a, b) => b.deliveries - a.deliveries);
+
       setRanking(sortedRanking);
     };
 
@@ -159,7 +165,6 @@ const App: React.FC = () => {
                 <>
                   <h1 className={styles.title}>🏆 Ranking de Entregas</h1>
 
-                  {/* Filtro de data aparece apenas para o modo diário */}
                   {period === 'daily' && (
                     <div className={styles.filters}>
                       <select
@@ -167,7 +172,7 @@ const App: React.FC = () => {
                         onChange={(e) => setSelectedDate(e.target.value)}
                       >
                         <option value="">Todas as datas</option>
-                        {availableDates.map(date => (
+                        {availableDates.map((date) => (
                           <option key={date} value={date}>
                             {new Date(date).toLocaleDateString('pt-BR')}
                           </option>
@@ -176,7 +181,6 @@ const App: React.FC = () => {
                     </div>
                   )}
 
-                  {/* Painel de controles unificado */}
                   <div className={styles.controlPanel}>
                     <div className={styles.periodToggle}>
                       <span>Período:</span>
@@ -216,7 +220,6 @@ const App: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Passa os dados e configurações para o RankingList */}
                   <RankingList ranking={ranking} viewMode={viewMode} goal={goal} />
                 </>
               }
