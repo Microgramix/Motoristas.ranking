@@ -61,12 +61,18 @@ const App: React.FC = () => {
         }
       > = {};
 
+      const allKnownDrivers = new Set<string>();
+
       teamsSnapshot.forEach((teamDoc) => {
         const teamData = teamDoc.data();
-      
+
         Object.entries(teamData).forEach(([date, drivers]) => {
-          dates.add(date); // ✅ adiciona TODAS as datas
-      
+          dates.add(date);
+
+          Object.keys(drivers as Record<string, number>).forEach((driver) => {
+            allKnownDrivers.add(driver);
+          });
+
           const recordDate = new Date(date);
           const isCurrentWeek = recordDate >= monday;
           const isCurrentMonth = recordDate >= firstDayOfMonth;
@@ -74,10 +80,8 @@ const App: React.FC = () => {
             (period === 'daily' && date === selectedDate) ||
             (period === 'weekly' && isCurrentWeek) ||
             (period === 'monthly' && isCurrentMonth);
-      
-          if (!includeDelivery) return;
 
-          dates.add(date);
+          if (!includeDelivery) return;
 
           Object.entries(drivers as Record<string, number>).forEach(([driver, count]) => {
             if (!allDrivers[driver]) {
@@ -114,6 +118,21 @@ const App: React.FC = () => {
           });
         });
       });
+
+      // Adiciona motoristas com 0 entregas no modo diário
+      if (period === 'daily') {
+        allKnownDrivers.forEach((driver) => {
+          if (!allDrivers[driver]) {
+            allDrivers[driver] = {
+              deliveries: 0,
+              weeklyDeliveries: 0,
+              lastUpdate: undefined,
+              trend: {},
+              weeklyTrend: {},
+            };
+          }
+        });
+      }
 
       setAvailableDates(Array.from(dates).sort().reverse());
       const sortedTrendDates = Array.from(dates).sort();
