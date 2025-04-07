@@ -15,7 +15,6 @@ export interface RankingItem {
   finalScore: number;
 }
 
-// Função para normalizar uma data (ignora as horas)
 const normalizeDate = (date: Date): Date => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
@@ -27,7 +26,6 @@ export const useRankingData = (
   const [ranking, setRanking] = useState<RankingItem[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
-  // Calcula a segunda-feira da semana de uma data
   const getMonday = (date: Date): Date => {
     const day = date.getDay();
     const diff = day === 0 ? -6 : 1 - day;
@@ -39,7 +37,6 @@ export const useRankingData = (
       const teamsSnapshot = await getDocs(collection(db, 'records'));
       const dates = new Set<string>();
       const today = new Date();
-      const mondayToday = normalizeDate(getMonday(today));
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const todayStr = today.toISOString().substring(0, 10);
       dates.add(todayStr);
@@ -64,14 +61,12 @@ export const useRankingData = (
           Object.keys(drivers as Record<string, number>).forEach((driver) => {
             allKnownDrivers.add(driver);
           });
-          // Normaliza a data para ignorar horas
           const recordDate = normalizeDate(new Date(date));
 
           let includeDelivery = false;
           if (period === 'daily') {
             includeDelivery = date === selectedDate;
           } else if (period === 'weekly') {
-            // Para semanal, utiliza a data selecionada para definir o intervalo (segunda a domingo)
             const selectedMonday = normalizeDate(getMonday(new Date(selectedDate)));
             const selectedSunday = addDays(selectedMonday, 6);
             includeDelivery = recordDate >= selectedMonday && recordDate <= selectedSunday;
@@ -124,7 +119,6 @@ export const useRankingData = (
       setAvailableDates(Array.from(dates).sort().reverse());
       const sortedTrendDates = Array.from(dates).sort();
 
-      // Lista dos nomes conhecidos do Sushishop
       const sushishopNames = new Set([
         "Rui Varela",
         "Farlom Miguel",
