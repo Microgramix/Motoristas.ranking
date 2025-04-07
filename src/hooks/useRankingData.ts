@@ -33,7 +33,7 @@ export const useRankingData = (
       const teamsSnapshot = await getDocs(collection(db, 'records'));
       const dates = new Set<string>();
       const today = new Date();
-      const mondayToday = getMonday(today);
+      // Removido: const mondayToday = getMonday(today);
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const todayStr = today.toISOString().substring(0, 10);
       dates.add(todayStr);
