@@ -4,7 +4,7 @@ import Podium from './Podium';
 import Leaderboard from './Leaderboard';
 import Footer from './Footer';
 
-interface RankingItem {
+export interface RankingItem {
   id: string;
   name: string;
   deliveries: number;
@@ -27,11 +27,15 @@ const RankingList: React.FC<RankingListProps> = ({
   goal,
   highlightTop = 5,
 }) => {
+  // Calcula o total de entregas e a porcentagem para preencher a meta
+  const totalDeliveries = ranking.reduce((sum, driver) => sum + driver.deliveries, 0);
+  const goalProgressPercentage = Math.min((totalDeliveries / goal) * 100, 100);
+
   return (
     <div className={styles.gameContainer}>
       <div className={styles.particles}>
         {Array.from({ length: 20 }).map((_, i) => (
-          <div key={i} className={styles.particle}></div>
+          <div key={i} className={styles.particle} />
         ))}
       </div>
 
@@ -41,12 +45,7 @@ const RankingList: React.FC<RankingListProps> = ({
           <div className={styles.goalProgress}>
             <div
               className={styles.goalFill}
-              style={{
-                width: `${
-                  (ranking.reduce((sum, driver) => sum + driver.deliveries, 0) / goal) *
-                  100
-                }%`,
-              }}
+              style={{ width: `${goalProgressPercentage}%` }}
             />
           </div>
         </div>
@@ -60,10 +59,12 @@ const RankingList: React.FC<RankingListProps> = ({
       ) : (
         <div className={styles.goalView}>
           {ranking.slice(0, 10).map((driver, index) => {
-            const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
-            // Calcula a pontuação corrigida para os motoristas do Sushi
-            const correctedScore = isSushishop ? Math.round(driver.deliveries * 0.8) : driver.deliveries;
-            // Usa os pontos corrigidos para calcular o progresso
+            const isSushishop =
+              driver.id?.startsWith('teamSushi') ||
+              driver.name.toLowerCase().includes('sushi');
+            const correctedScore = isSushishop
+              ? Math.round(driver.deliveries * 0.8)
+              : driver.deliveries;
             const progress = Math.min((correctedScore / goal) * 100, 100);
 
             return (
@@ -72,7 +73,8 @@ const RankingList: React.FC<RankingListProps> = ({
                 <div className={styles.goalAvatar}>{driver.avatar || '🚚'}</div>
                 <div className={styles.goalInfo}>
                   <div className={styles.goalName}>
-                    {driver.name}{isSushishop ? " (Sushishop)" : ""}
+                    {driver.name}
+                    {isSushishop && ' (Sushishop)'}
                   </div>
                   <div className={styles.goalProgressContainer}>
                     <div className={styles.goalProgressBar} style={{ width: `${progress}%` }}>
@@ -90,7 +92,7 @@ const RankingList: React.FC<RankingListProps> = ({
       )}
 
       <Footer ranking={ranking} />
-      {ranking.length > 0 && <div className={styles.championGlow}></div>}
+      {ranking.length > 0 && <div className={styles.championGlow} />}
     </div>
   );
 };

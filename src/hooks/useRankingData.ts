@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../Firebase/Firebase';
+import { addDays } from 'date-fns';
 
 export interface RankingItem {
   id: string;
@@ -32,7 +33,7 @@ export const useRankingData = (
       const teamsSnapshot = await getDocs(collection(db, 'records'));
       const dates = new Set<string>();
       const today = new Date();
-      const monday = getMonday(today);
+      const mondayToday = getMonday(today);
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const todayStr = today.toISOString().substring(0, 10);
       dates.add(todayStr);
@@ -58,12 +59,18 @@ export const useRankingData = (
             allKnownDrivers.add(driver);
           });
           const recordDate = new Date(date);
-          const isCurrentWeek = recordDate >= monday;
-          const isCurrentMonth = recordDate >= firstDayOfMonth;
-          const includeDelivery =
-            (period === 'daily' && date === selectedDate) ||
-            (period === 'weekly' && isCurrentWeek) ||
-            (period === 'monthly' && isCurrentMonth);
+
+          let includeDelivery = false;
+          if (period === 'daily') {
+            includeDelivery = date === selectedDate;
+          } else if (period === 'weekly') {
+            // Para semanal, utiliza a data selecionada para definir o intervalo
+            const selectedMonday = getMonday(new Date(selectedDate));
+            const selectedSunday = addDays(selectedMonday, 6);
+            includeDelivery = recordDate >= selectedMonday && recordDate <= selectedSunday;
+          } else if (period === 'monthly') {
+            includeDelivery = recordDate >= firstDayOfMonth;
+          }
 
           if (!includeDelivery) return;
 
@@ -79,14 +86,15 @@ export const useRankingData = (
             }
             const currentCount = Number(count);
             allDrivers[driver].deliveries += currentCount;
-            if (isCurrentWeek) {
+            // Para o período semanal, acumulamos em weeklyDeliveries
+            if (period === 'weekly') {
               allDrivers[driver].weeklyDeliveries += currentCount;
             }
             if (!allDrivers[driver].lastUpdate || recordDate > new Date(allDrivers[driver].lastUpdate!)) {
               allDrivers[driver].lastUpdate = date;
             }
             allDrivers[driver].trend[date] = (allDrivers[driver].trend[date] || 0) + currentCount;
-            if (isCurrentWeek) {
+            if (period === 'weekly') {
               allDrivers[driver].weeklyTrend[date] = (allDrivers[driver].weeklyTrend[date] || 0) + currentCount;
             }
           });
@@ -122,10 +130,8 @@ export const useRankingData = (
 
       const sortedRanking = Object.entries(allDrivers)
         .map(([driverId, { deliveries, weeklyDeliveries, lastUpdate, trend, weeklyTrend }]) => {
-          // Se o driverId estiver na lista, atualiza o id para incluir o prefixo "teamSushi-"
           const isSushi = sushishopNames.has(driverId);
           const newId = isSushi ? `teamSushi-${driverId}` : driverId;
-          // finalScore: se for sushi, aplicar correção (0.8); caso contrário, usar os deliveries brutos
           const finalScore = isSushi ? Math.round(deliveries * 0.8) : deliveries;
           return {
             id: newId,
@@ -136,7 +142,14 @@ export const useRankingData = (
             finalScore,
             trend: sortedTrendDates.map((date) => trend[date] || 0),
             weeklyTrend: sortedTrendDates
-              .filter((date) => new Date(date) >= monday)
+              .filter((date) => {
+                if (period === 'weekly') {
+                  const selectedMonday = getMonday(new Date(selectedDate));
+                  const selectedSunday = addDays(selectedMonday, 6);
+                  return new Date(date) >= selectedMonday && new Date(date) <= selectedSunday;
+                }
+                return true;
+              })
               .map((date) => weeklyTrend[date] || 0),
             trendDates: sortedTrendDates,
           };

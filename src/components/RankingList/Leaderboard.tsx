@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './RankingList.module.scss';
 import LevelIndicator from './LevelIndicator';
@@ -25,16 +25,24 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [chartPeriod, setChartPeriod] = useState<'week' | 'month' | 'year'>('week');
 
+  // Verifica se está em modo semanal com base na meta (lógica específica do projeto)
   const isWeeklyMode = monthlyGoal === 130;
 
-  // Função que calcula o progresso usando a pontuação corrigida para os motoristas do Sushi
-  const calculateProgress = (driver: Driver) => {
-    const rawScore = isWeeklyMode && driver.weeklyDeliveries !== undefined
-      ? driver.weeklyDeliveries
-      : driver.deliveries;
-    const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
-    const finalScore = isSushishop ? Math.round(rawScore * 0.8) : rawScore;
-    return Math.min((finalScore / monthlyGoal) * 100, 100);
+  // Função auxiliar para calcular a pontuação corrigida
+  const getCorrectedScore = useCallback(
+    (driver: Driver): number => {
+      const rawScore =
+        isWeeklyMode && driver.weeklyDeliveries !== undefined ? driver.weeklyDeliveries : driver.deliveries;
+      const isSushishop =
+        driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
+      return isSushishop ? Math.round(rawScore * 0.8) : rawScore;
+    },
+    [isWeeklyMode]
+  );
+
+  const calculateProgress = (driver: Driver): number => {
+    const correctedScore = getCorrectedScore(driver);
+    return Math.min((correctedScore / monthlyGoal) * 100, 100);
   };
 
   const openModal = (driver: Driver) => {
@@ -46,7 +54,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
     setSelectedDriver(null);
   };
 
-  const getFilteredTrendData = () => {
+  const getFilteredTrendData = (): number[] => {
     if (!selectedDriver) return [];
     if (chartPeriod === 'week') return selectedDriver.weeklyTrend || [];
     if (chartPeriod === 'month') return selectedDriver.trend?.slice(-30) || [];
@@ -58,11 +66,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
     <div className={styles.leaderboard}>
       {ranking.map((driver, index) => {
         const isTopPosition = index < highlightTop;
-        const rawScore = isWeeklyMode && driver.weeklyDeliveries !== undefined
-          ? driver.weeklyDeliveries
-          : driver.deliveries;
-        const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
-        const correctedScore = isSushishop ? Math.round(rawScore * 0.8) : rawScore;
+        const isSushishop =
+          driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
+        const correctedScore = getCorrectedScore(driver);
         const progress = calculateProgress(driver);
 
         return (
@@ -96,9 +102,10 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
             <div className={styles.driverInfo}>
               <div className={styles.nameProgress}>
                 <span className={styles.name}>
-                  {driver.name}{isSushishop ? " (Sushishop)" : ""}
+                  {driver.name}
+                  {isSushishop && ' (Sushishop)'}
                 </span>
-                <span className={styles.deliveries}>{rawScore.toLocaleString()} pts</span>
+                <span className={styles.deliveries}>{driver.deliveries.toLocaleString()} pts</span>
               </div>
               {isSushishop && (
                 <div className={styles.sushiCorrection}>
@@ -134,11 +141,28 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             >
-              <button className={styles.closeButton} onClick={closeModal}>X</button>
+              <button className={styles.closeButton} onClick={closeModal}>
+                X
+              </button>
               <div className={styles.chartPeriodToggle}>
-                <button className={chartPeriod === 'week' ? styles.activePeriod : ''} onClick={() => setChartPeriod('week')}>Semana</button>
-                <button className={chartPeriod === 'month' ? styles.activePeriod : ''} onClick={() => setChartPeriod('month')}>Mês</button>
-                <button className={chartPeriod === 'year' ? styles.activePeriod : ''} onClick={() => setChartPeriod('year')}>Ano</button>
+                <button
+                  className={chartPeriod === 'week' ? styles.activePeriod : ''}
+                  onClick={() => setChartPeriod('week')}
+                >
+                  Semana
+                </button>
+                <button
+                  className={chartPeriod === 'month' ? styles.activePeriod : ''}
+                  onClick={() => setChartPeriod('month')}
+                >
+                  Mês
+                </button>
+                <button
+                  className={chartPeriod === 'year' ? styles.activePeriod : ''}
+                  onClick={() => setChartPeriod('year')}
+                >
+                  Ano
+                </button>
               </div>
               <TrendChart data={getFilteredTrendData()} />
               <div className={styles.statsGrid}>

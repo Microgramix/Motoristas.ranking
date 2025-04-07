@@ -1,5 +1,5 @@
 // components/RankingFilters/RankingFilters.tsx
-import React from 'react';
+import React, { useMemo } from 'react';
 import styles from './RankingFilters.module.scss';
 import { format, addDays } from 'date-fns';
 
@@ -13,6 +13,13 @@ interface Props {
   availableDates: string[];
 }
 
+// Função auxiliar para obter a segunda-feira de uma determinada data
+const getMonday = (date: Date): Date => {
+  const day = date.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  return addDays(date, diff);
+};
+
 const RankingFilters: React.FC<Props> = ({
   selectedDate,
   onDateChange,
@@ -22,15 +29,22 @@ const RankingFilters: React.FC<Props> = ({
   onViewModeChange,
   availableDates
 }) => {
-  // Retorna intervalo da semana baseado na selectedDate
-  const getWeekRange = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const day = date.getDay();
-    const diff = day === 0 ? -6 : 1 - day;
-    const monday = addDays(date, diff);
-    const sunday = addDays(monday, 6);
-    return `${format(monday, 'dd/MM/yyyy')} - ${format(sunday, 'dd/MM/yyyy')}`;
-  };
+  // Para o modo semanal, agrupar as datas disponíveis por semana (segunda-feira)
+  const availableWeeks = useMemo(() => {
+    const weeksMap = new Map<string, Date>();
+    availableDates.forEach(dateStr => {
+      const date = new Date(dateStr);
+      const monday = getMonday(date);
+      const mondayStr = monday.toISOString().substring(0, 10);
+      weeksMap.set(mondayStr, monday);
+    });
+    // Ordena as semanas de forma decrescente (mais recente primeiro)
+    const weeks = Array.from(weeksMap.values()).sort((a, b) => b.getTime() - a.getTime());
+    return weeks.map(monday => ({
+      monday: monday.toISOString().substring(0, 10),
+      range: `${format(monday, 'dd/MM/yyyy')} - ${format(addDays(monday, 6), 'dd/MM/yyyy')}`
+    }));
+  }, [availableDates]);
 
   return (
     <div className={styles.filtersPanel}>
@@ -38,7 +52,7 @@ const RankingFilters: React.FC<Props> = ({
         <label>📅 Período:</label>
         <select
           value={period}
-          onChange={(e) => onPeriodChange(e.target.value as any)}
+          onChange={(e) => onPeriodChange(e.target.value as 'daily' | 'weekly' | 'monthly')}
         >
           <option value="daily">Diário</option>
           <option value="weekly">Semanal</option>
@@ -62,11 +76,19 @@ const RankingFilters: React.FC<Props> = ({
         </div>
       )}
 
-      {period === 'weekly' && selectedDate && (
+      {period === 'weekly' && (
         <div className={styles.row}>
-          <span className={styles.weekRange}>
-            📆 Semana: {getWeekRange(selectedDate)}
-          </span>
+          <label>Semana:</label>
+          <select
+            value={selectedDate}
+            onChange={(e) => onDateChange(e.target.value)}
+          >
+            {availableWeeks.map((week) => (
+              <option key={week.monday} value={week.monday}>
+                {week.range}
+              </option>
+            ))}
+          </select>
         </div>
       )}
 
@@ -74,7 +96,7 @@ const RankingFilters: React.FC<Props> = ({
         <label>Visualização:</label>
         <select
           value={viewMode}
-          onChange={(e) => onViewModeChange(e.target.value as any)}
+          onChange={(e) => onViewModeChange(e.target.value as 'normal' | 'goal')}
         >
           <option value="normal">Ranking</option>
           <option value="goal">Meta ({period})</option>
