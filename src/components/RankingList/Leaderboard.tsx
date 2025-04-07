@@ -27,9 +27,14 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
 
   const isWeeklyMode = monthlyGoal === 130;
 
+  // Função que calcula o progresso usando a pontuação corrigida para os motoristas do Sushi
   const calculateProgress = (driver: Driver) => {
-    const score = isWeeklyMode && driver.weeklyDeliveries !== undefined ? driver.weeklyDeliveries : driver.deliveries;
-    return Math.min((score / monthlyGoal) * 100, 100);
+    const rawScore = isWeeklyMode && driver.weeklyDeliveries !== undefined
+      ? driver.weeklyDeliveries
+      : driver.deliveries;
+    const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
+    const finalScore = isSushishop ? Math.round(rawScore * 0.8) : rawScore;
+    return Math.min((finalScore / monthlyGoal) * 100, 100);
   };
 
   const openModal = (driver: Driver) => {
@@ -58,7 +63,7 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
           : driver.deliveries;
         const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
         const correctedScore = isSushishop ? Math.round(rawScore * 0.8) : rawScore;
-        const progress = Math.min((correctedScore / monthlyGoal) * 100, 100);
+        const progress = calculateProgress(driver);
 
         return (
           <motion.div
@@ -93,13 +98,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
                 <span className={styles.name}>
                   {driver.name}{isSushishop ? " (Sushishop)" : ""}
                 </span>
-                {/* Exibe os pontos originais */}
                 <span className={styles.deliveries}>{rawScore.toLocaleString()} pts</span>
               </div>
-              {/* Exibe também a correção para motoristas do Sushi */}
               {isSushishop && (
                 <div className={styles.sushiCorrection}>
-                  ⚠️ Correçao Sushi Shop: {correctedScore.toLocaleString()} pts
+                  ⚠️ Correção Sushi Shop: {correctedScore.toLocaleString()} pts
                 </div>
               )}
               <div className={styles.progressBar}>
