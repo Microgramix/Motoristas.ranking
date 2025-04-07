@@ -966,3 +966,14 @@ $bronze-gradient: linear-gradient(135deg, $bronze, #B87333);
   color: $text;
   cursor: pointer;
 }
+
+.sushiCorrection {
+  font-size: 0.75rem;
+  margin-top: -0.4rem;
+  font-weight: 600;
+  color: $gold;
+  text-shadow: 0 0 6px rgba($gold, 0.5);
+  display: block;
+}
+
+

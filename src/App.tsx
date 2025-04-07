@@ -1,4 +1,3 @@
-// src/App.tsx
 import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './components/Header/Header';
@@ -7,14 +6,14 @@ import RankingList from './components/RankingList/RankingList';
 import Dashboard from './components/Dashboard/Dashboard';
 import RankingFilters from './components/RankingFilters/RankingFilters';
 import { useRankingData } from './hooks/useRankingData';
+import TestAlertModal from './TestAlertModal';
 import styles from './App.module.scss';
 
 const App: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().substring(0, 10)
-  );
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().substring(0, 10));
   const [period, setPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [viewMode, setViewMode] = useState<'normal' | 'goal'>('normal');
+  const [showTestAlert, setShowTestAlert] = useState(true);
 
   const goalMapping = {
     daily: 20,
@@ -47,11 +46,7 @@ const App: React.FC = () => {
                     availableDates={availableDates}
                   />
 
-                  <RankingList
-                    ranking={ranking}
-                    viewMode={viewMode}
-                    goal={goal}
-                  />
+                  <RankingList ranking={ranking} viewMode={viewMode} goal={goal} />
                 </>
               }
             />
@@ -59,6 +54,7 @@ const App: React.FC = () => {
           </Routes>
         </main>
         <BottomHeader />
+        {showTestAlert && <TestAlertModal onClose={() => setShowTestAlert(false)} />}
       </div>
     </BrowserRouter>
   );

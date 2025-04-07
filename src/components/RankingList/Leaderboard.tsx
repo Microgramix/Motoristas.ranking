@@ -1,4 +1,3 @@
-// Leaderboard.tsx
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './RankingList.module.scss';
@@ -6,36 +5,33 @@ import LevelIndicator from './LevelIndicator';
 import TrendChart from '../TrendChart/TrendChart';
 
 interface Driver {
+  id?: string;
   name: string;
-  deliveries: number;         // Total
-  weeklyDeliveries?: number;  // Entregas da semana corrente
+  deliveries: number;
+  weeklyDeliveries?: number;
   avatar?: string;
   level?: number;
-  trend?: number[];           // Histórico total
-  weeklyTrend?: number[];     // Histórico somente da semana atual
+  trend?: number[];
+  weeklyTrend?: number[];
 }
 
 interface LeaderboardProps {
   ranking: Driver[];
   highlightTop?: number;
-  monthlyGoal: number; // Valor da meta conforme o período (por exemplo, semanal = 130)
+  monthlyGoal: number;
 }
 
 const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, monthlyGoal }) => {
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
-  // Estado para controlar o período do gráfico: 'week' (semana), 'month' (mês) e 'year' (ano)
   const [chartPeriod, setChartPeriod] = useState<'week' | 'month' | 'year'>('week');
 
-  // Detecta se estamos em modo semanal (por exemplo, se a meta é 130)
   const isWeeklyMode = monthlyGoal === 130;
 
-  // Usa o valor correto de pontuação conforme o modo (se semanal, utiliza weeklyDeliveries)
   const calculateProgress = (driver: Driver) => {
     const score = isWeeklyMode && driver.weeklyDeliveries !== undefined ? driver.weeklyDeliveries : driver.deliveries;
     return Math.min((score / monthlyGoal) * 100, 100);
   };
 
-  // Abre o modal e reseta o período para semana
   const openModal = (driver: Driver) => {
     setSelectedDriver(driver);
     setChartPeriod('week');
@@ -45,19 +41,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
     setSelectedDriver(null);
   };
 
-  // Filtra os dados do gráfico com base no período selecionado
   const getFilteredTrendData = () => {
     if (!selectedDriver) return [];
-    // Se estivermos no modo semanal, utiliza o histórico semanal calculado
-    if (chartPeriod === 'week') {
-      return selectedDriver.weeklyTrend || [];
-    } else if (chartPeriod === 'month') {
-      // Últimos 30 dias do histórico total
-      return selectedDriver.trend ? selectedDriver.trend.slice(-30) : [];
-    } else if (chartPeriod === 'year') {
-      // Últimos 365 dias do histórico total
-      return selectedDriver.trend ? selectedDriver.trend.slice(-365) : [];
-    }
+    if (chartPeriod === 'week') return selectedDriver.weeklyTrend || [];
+    if (chartPeriod === 'month') return selectedDriver.trend?.slice(-30) || [];
+    if (chartPeriod === 'year') return selectedDriver.trend?.slice(-365) || [];
     return selectedDriver.trend || [];
   };
 
@@ -65,9 +53,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
     <div className={styles.leaderboard}>
       {ranking.map((driver, index) => {
         const isTopPosition = index < highlightTop;
-        // Se estivermos em modo semanal, usa weeklyDeliveries; caso contrário, usa o total
-        const score = isWeeklyMode && driver.weeklyDeliveries !== undefined ? driver.weeklyDeliveries : driver.deliveries;
-        const progress = calculateProgress(driver);
+        const rawScore = isWeeklyMode && driver.weeklyDeliveries !== undefined
+          ? driver.weeklyDeliveries
+          : driver.deliveries;
+        const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
+        const correctedScore = isSushishop ? Math.round(rawScore * 0.8) : rawScore;
+        const progress = Math.min((correctedScore / monthlyGoal) * 100, 100);
+
         return (
           <motion.div
             key={`${driver.name}-${index}`}
@@ -92,15 +84,24 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
             <div className={styles.driverAvatar}>
               {driver.avatar || '🚛'}
               <div className={styles.levelBadge}>
-                <LevelIndicator deliveries={score} />
+                <LevelIndicator deliveries={correctedScore} />
               </div>
             </div>
 
             <div className={styles.driverInfo}>
               <div className={styles.nameProgress}>
-                <span className={styles.name}>{driver.name}</span>
-                <span className={styles.deliveries}>{score.toLocaleString()} pts</span>
+                <span className={styles.name}>
+                  {driver.name}{isSushishop ? " (Sushishop)" : ""}
+                </span>
+                {/* Exibe os pontos originais */}
+                <span className={styles.deliveries}>{rawScore.toLocaleString()} pts</span>
               </div>
+              {/* Exibe também a correção para motoristas do Sushi */}
+              {isSushishop && (
+                <div className={styles.sushiCorrection}>
+                  ⚠️ Correçao Sushi Shop: {correctedScore.toLocaleString()} pts
+                </div>
+              )}
               <div className={styles.progressBar}>
                 <div className={styles.progressFill} style={{ width: `${progress}%` }} />
                 <span className={styles.progressText}>{progress.toFixed(0)}%</span>
@@ -116,7 +117,6 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
         );
       })}
 
-      {/* Modal para exibir detalhes do motorista e o gráfico */}
       <AnimatePresence>
         {selectedDriver && (
           <motion.div
@@ -131,49 +131,25 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             >
-              <button className={styles.closeButton} onClick={closeModal}>
-                X
-              </button>
-              
-              {/* Seletor de período para o gráfico */}
+              <button className={styles.closeButton} onClick={closeModal}>X</button>
               <div className={styles.chartPeriodToggle}>
-                <button 
-                  className={chartPeriod === 'week' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('week')}
-                >
-                  Semana
-                </button>
-                <button 
-                  className={chartPeriod === 'month' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('month')}
-                >
-                  Mês
-                </button>
-                <button 
-                  className={chartPeriod === 'year' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('year')}
-                >
-                  Ano
-                </button>
+                <button className={chartPeriod === 'week' ? styles.activePeriod : ''} onClick={() => setChartPeriod('week')}>Semana</button>
+                <button className={chartPeriod === 'month' ? styles.activePeriod : ''} onClick={() => setChartPeriod('month')}>Mês</button>
+                <button className={chartPeriod === 'year' ? styles.activePeriod : ''} onClick={() => setChartPeriod('year')}>Ano</button>
               </div>
-
-              {/* Gráfico de Tendência com dados filtrados */}
               <TrendChart data={getFilteredTrendData()} />
-
               <div className={styles.statsGrid}>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Entregas Hoje</span>
-                  <span className={styles.statValue}>
-                    {(selectedDriver.deliveries * 0.1).toFixed(0)}
-                  </span>
+                  <span className={styles.statValue}>{(selectedDriver.deliveries * 0.1).toFixed(0)}</span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Rating</span>
-                  <span className={styles.statValue}>⭐{(5).toFixed(1)}</span>
+                  <span className={styles.statValue}>⭐5.0</span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Eficiência</span>
-                  <span className={styles.statValue}>{(90).toFixed(0)}%</span>
+                  <span className={styles.statValue}>90%</span>
                 </div>
                 <div className={styles.statItem}>
                   <span className={styles.statLabel}>Próximo Nível</span>

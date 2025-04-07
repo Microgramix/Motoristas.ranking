@@ -1,9 +1,9 @@
-// src/hooks/useRankingData.ts
 import { useEffect, useState } from 'react';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../Firebase/Firebase';
 
 export interface RankingItem {
+  id: string;
   name: string;
   deliveries: number;
   weeklyDeliveries: number;
@@ -11,6 +11,7 @@ export interface RankingItem {
   trend: number[];
   weeklyTrend: number[];
   trendDates: string[];
+  finalScore: number;
 }
 
 export const useRankingData = (
@@ -51,14 +52,11 @@ export const useRankingData = (
 
       teamsSnapshot.forEach((teamDoc) => {
         const teamData = teamDoc.data();
-
         Object.entries(teamData).forEach(([date, drivers]) => {
           dates.add(date);
-
           Object.keys(drivers as Record<string, number>).forEach((driver) => {
             allKnownDrivers.add(driver);
           });
-
           const recordDate = new Date(date);
           const isCurrentWeek = recordDate >= monday;
           const isCurrentMonth = recordDate >= firstDayOfMonth;
@@ -79,27 +77,17 @@ export const useRankingData = (
                 weeklyTrend: {},
               };
             }
-
             const currentCount = Number(count);
             allDrivers[driver].deliveries += currentCount;
-
             if (isCurrentWeek) {
               allDrivers[driver].weeklyDeliveries += currentCount;
             }
-
-            if (
-              !allDrivers[driver].lastUpdate ||
-              recordDate > new Date(allDrivers[driver].lastUpdate!)
-            ) {
+            if (!allDrivers[driver].lastUpdate || recordDate > new Date(allDrivers[driver].lastUpdate!)) {
               allDrivers[driver].lastUpdate = date;
             }
-
-            allDrivers[driver].trend[date] =
-              (allDrivers[driver].trend[date] || 0) + currentCount;
-
+            allDrivers[driver].trend[date] = (allDrivers[driver].trend[date] || 0) + currentCount;
             if (isCurrentWeek) {
-              allDrivers[driver].weeklyTrend[date] =
-                (allDrivers[driver].weeklyTrend[date] || 0) + currentCount;
+              allDrivers[driver].weeklyTrend[date] = (allDrivers[driver].weeklyTrend[date] || 0) + currentCount;
             }
           });
         });
@@ -121,19 +109,39 @@ export const useRankingData = (
 
       setAvailableDates(Array.from(dates).sort().reverse());
       const sortedTrendDates = Array.from(dates).sort();
+
+      // Lista dos nomes conhecidos do Sushishop
+      const sushishopNames = new Set([
+        "Rui Varela",
+        "Farlom Miguel",
+        "Fred",
+        "Ricardo A.",
+        "Figarella",
+        "Wagner"
+      ]);
+
       const sortedRanking = Object.entries(allDrivers)
-        .map(([name, { deliveries, weeklyDeliveries, lastUpdate, trend, weeklyTrend }]) => ({
-          name,
-          deliveries,
-          weeklyDeliveries,
-          lastUpdate,
-          trend: sortedTrendDates.map((date) => trend[date] || 0),
-          weeklyTrend: sortedTrendDates
-            .filter((date) => new Date(date) >= monday)
-            .map((date) => weeklyTrend[date] || 0),
-          trendDates: sortedTrendDates,
-        }))
-        .sort((a, b) => b.deliveries - a.deliveries);
+        .map(([driverId, { deliveries, weeklyDeliveries, lastUpdate, trend, weeklyTrend }]) => {
+          // Se o driverId estiver na lista, atualiza o id para incluir o prefixo "teamSushi-"
+          const isSushi = sushishopNames.has(driverId);
+          const newId = isSushi ? `teamSushi-${driverId}` : driverId;
+          // finalScore: se for sushi, aplicar correção (0.8); caso contrário, usar os deliveries brutos
+          const finalScore = isSushi ? Math.round(deliveries * 0.8) : deliveries;
+          return {
+            id: newId,
+            name: driverId,
+            deliveries,
+            weeklyDeliveries,
+            lastUpdate,
+            finalScore,
+            trend: sortedTrendDates.map((date) => trend[date] || 0),
+            weeklyTrend: sortedTrendDates
+              .filter((date) => new Date(date) >= monday)
+              .map((date) => weeklyTrend[date] || 0),
+            trendDates: sortedTrendDates,
+          };
+        })
+        .sort((a, b) => b.finalScore - a.finalScore);
 
       setRanking(sortedRanking);
     };

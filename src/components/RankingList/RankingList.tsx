@@ -5,8 +5,10 @@ import Leaderboard from './Leaderboard';
 import Footer from './Footer';
 
 interface RankingItem {
+  id: string;
   name: string;
   deliveries: number;
+  finalScore: number; // Pontos corrigidos para ordenação (para Sushishop)
   avatar?: string;
   level?: number;
   progress?: number;
@@ -48,7 +50,7 @@ const RankingList: React.FC<RankingListProps> = ({
             />
           </div>
         </div>
-        <span className={styles.lastUpdate}>📅 Atualizado: 26/03/2025</span>
+        <span className={styles.lastUpdate}>📅 Atualizado: 07/04/2025</span>
       </div>
 
       <Podium ranking={ranking} />
@@ -58,17 +60,24 @@ const RankingList: React.FC<RankingListProps> = ({
       ) : (
         <div className={styles.goalView}>
           {ranking.slice(0, 10).map((driver, index) => {
-            const progress = Math.min((driver.deliveries / goal) * 100, 100);
+            const isSushishop = driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
+            // Calcula a pontuação corrigida para os motoristas do Sushi
+            const correctedScore = isSushishop ? Math.round(driver.deliveries * 0.8) : driver.deliveries;
+            // Usa os pontos corrigidos para calcular o progresso
+            const progress = Math.min((correctedScore / goal) * 100, 100);
+
             return (
               <div key={`goal-${index}`} className={styles.goalCard}>
                 <div className={styles.goalRank}>{index + 1}º</div>
                 <div className={styles.goalAvatar}>{driver.avatar || '🚚'}</div>
                 <div className={styles.goalInfo}>
-                  <div className={styles.goalName}>{driver.name}</div>
+                  <div className={styles.goalName}>
+                    {driver.name}{isSushishop ? " (Sushishop)" : ""}
+                  </div>
                   <div className={styles.goalProgressContainer}>
                     <div className={styles.goalProgressBar} style={{ width: `${progress}%` }}>
                       <span className={styles.goalProgressText}>
-                        {driver.deliveries}/{goal} ({progress.toFixed(0)}%)
+                        {driver.deliveries} pts | Corrigido: {correctedScore} pts ({progress.toFixed(0)}%)
                       </span>
                     </div>
                   </div>
