@@ -15,6 +15,11 @@ export interface RankingItem {
   finalScore: number;
 }
 
+// Função para normalizar uma data (ignora as horas)
+const normalizeDate = (date: Date): Date => {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
 export const useRankingData = (
   period: 'daily' | 'weekly' | 'monthly',
   selectedDate: string
@@ -22,6 +27,7 @@ export const useRankingData = (
   const [ranking, setRanking] = useState<RankingItem[]>([]);
   const [availableDates, setAvailableDates] = useState<string[]>([]);
 
+  // Calcula a segunda-feira da semana de uma data
   const getMonday = (date: Date): Date => {
     const day = date.getDay();
     const diff = day === 0 ? -6 : 1 - day;
@@ -33,7 +39,7 @@ export const useRankingData = (
       const teamsSnapshot = await getDocs(collection(db, 'records'));
       const dates = new Set<string>();
       const today = new Date();
-      // Removido: const mondayToday = getMonday(today);
+      const mondayToday = normalizeDate(getMonday(today));
       const firstDayOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
       const todayStr = today.toISOString().substring(0, 10);
       dates.add(todayStr);
@@ -58,14 +64,15 @@ export const useRankingData = (
           Object.keys(drivers as Record<string, number>).forEach((driver) => {
             allKnownDrivers.add(driver);
           });
-          const recordDate = new Date(date);
+          // Normaliza a data para ignorar horas
+          const recordDate = normalizeDate(new Date(date));
 
           let includeDelivery = false;
           if (period === 'daily') {
             includeDelivery = date === selectedDate;
           } else if (period === 'weekly') {
-            // Para semanal, utiliza a data selecionada para definir o intervalo
-            const selectedMonday = getMonday(new Date(selectedDate));
+            // Para semanal, utiliza a data selecionada para definir o intervalo (segunda a domingo)
+            const selectedMonday = normalizeDate(getMonday(new Date(selectedDate)));
             const selectedSunday = addDays(selectedMonday, 6);
             includeDelivery = recordDate >= selectedMonday && recordDate <= selectedSunday;
           } else if (period === 'monthly') {
@@ -86,7 +93,6 @@ export const useRankingData = (
             }
             const currentCount = Number(count);
             allDrivers[driver].deliveries += currentCount;
-            // Para o período semanal, acumulamos em weeklyDeliveries
             if (period === 'weekly') {
               allDrivers[driver].weeklyDeliveries += currentCount;
             }
@@ -144,9 +150,9 @@ export const useRankingData = (
             weeklyTrend: sortedTrendDates
               .filter((date) => {
                 if (period === 'weekly') {
-                  const selectedMonday = getMonday(new Date(selectedDate));
+                  const selectedMonday = normalizeDate(getMonday(new Date(selectedDate)));
                   const selectedSunday = addDays(selectedMonday, 6);
-                  return new Date(date) >= selectedMonday && new Date(date) <= selectedSunday;
+                  return normalizeDate(new Date(date)) >= selectedMonday && normalizeDate(new Date(date)) <= selectedSunday;
                 }
                 return true;
               })

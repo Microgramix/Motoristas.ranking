@@ -25,10 +25,9 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
   const [selectedDriver, setSelectedDriver] = useState<Driver | null>(null);
   const [chartPeriod, setChartPeriod] = useState<'week' | 'month' | 'year'>('week');
 
-  // Verifica se está em modo semanal com base na meta (lógica específica do projeto)
   const isWeeklyMode = monthlyGoal === 130;
 
-  // Função auxiliar para calcular a pontuação corrigida
+  // Calcula a pontuação corrigida somente para motoristas do Sushi
   const getCorrectedScore = useCallback(
     (driver: Driver): number => {
       const rawScore =
@@ -66,6 +65,8 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
     <div className={styles.leaderboard}>
       {ranking.map((driver, index) => {
         const isTopPosition = index < highlightTop;
+        const rawScore =
+          isWeeklyMode && driver.weeklyDeliveries !== undefined ? driver.weeklyDeliveries : driver.deliveries;
         const isSushishop =
           driver.id?.startsWith('teamSushi') || driver.name.toLowerCase().includes('sushi');
         const correctedScore = getCorrectedScore(driver);
@@ -102,14 +103,13 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
             <div className={styles.driverInfo}>
               <div className={styles.nameProgress}>
                 <span className={styles.name}>
-                  {driver.name}
-                  {isSushishop && ' (Sushishop)'}
+                  {driver.name}{isSushishop && " (Sushishop)"}
                 </span>
-                <span className={styles.deliveries}>{driver.deliveries.toLocaleString()} pts</span>
+                <span className={styles.deliveries}>{rawScore.toLocaleString()} pts</span>
               </div>
               {isSushishop && (
                 <div className={styles.sushiCorrection}>
-                  ⚠️ Correção Sushi Shop: {correctedScore.toLocaleString()} pts
+                  ⚠️ Correção: {correctedScore.toLocaleString()} pts
                 </div>
               )}
               <div className={styles.progressBar}>
@@ -141,28 +141,11 @@ const Leaderboard: React.FC<LeaderboardProps> = ({ ranking, highlightTop = 5, mo
               animate={{ scale: 1 }}
               exit={{ scale: 0.8 }}
             >
-              <button className={styles.closeButton} onClick={closeModal}>
-                X
-              </button>
+              <button className={styles.closeButton} onClick={closeModal}>X</button>
               <div className={styles.chartPeriodToggle}>
-                <button
-                  className={chartPeriod === 'week' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('week')}
-                >
-                  Semana
-                </button>
-                <button
-                  className={chartPeriod === 'month' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('month')}
-                >
-                  Mês
-                </button>
-                <button
-                  className={chartPeriod === 'year' ? styles.activePeriod : ''}
-                  onClick={() => setChartPeriod('year')}
-                >
-                  Ano
-                </button>
+                <button className={chartPeriod === 'week' ? styles.activePeriod : ''} onClick={() => setChartPeriod('week')}>Semana</button>
+                <button className={chartPeriod === 'month' ? styles.activePeriod : ''} onClick={() => setChartPeriod('month')}>Mês</button>
+                <button className={chartPeriod === 'year' ? styles.activePeriod : ''} onClick={() => setChartPeriod('year')}>Ano</button>
               </div>
               <TrendChart data={getFilteredTrendData()} />
               <div className={styles.statsGrid}>
